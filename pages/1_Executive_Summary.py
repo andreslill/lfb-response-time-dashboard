@@ -189,7 +189,7 @@ fig, ax = plt.subplots(figsize=(FIG_WIDTH, FIG_HEIGHT_MEDIUM))
 
 sns.histplot(
     response_minutes,
-    bins=25,
+    bins=30,
     kde=False,
     stat="percent",
     ax=ax
