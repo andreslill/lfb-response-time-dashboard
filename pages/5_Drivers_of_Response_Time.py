@@ -817,7 +817,7 @@ if metric == "Not held up count":
 
     if not top_row.empty:
         st.markdown(f"""
-            **Map Insight:**
+            **Map Insight**
             - The highest number of “Not held up” exceedances is in 
              **{top_row.iloc[0]['IncGeo_BoroughName']}** 
              ({int(top_row.iloc[0]['NotHeldUp_Count']):,} incidents).
