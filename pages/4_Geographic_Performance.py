@@ -545,7 +545,7 @@ boroughs = boroughs.merge(
 # Metric Toggle
 metric_choice = st.radio(
     "Select Geographic Metric",
-    ["Incident Volume", "Median Response Time", "Response within 6 min (%)"],
+    ["Median Response Time", "Response within 6 min (%)", "Incident Volume"],
     horizontal=True,
     key="geo_metric_toggle"
 )
@@ -649,23 +649,7 @@ st_folium(m, use_container_width=True, height=600)
 
 # ---------------------------------------------------
 
-
-
-
-
-
-
-
-
-
-
-# ---------------------------------------------------------------------
-# Dynamic Map Insights
-# Place this block directly after st_folium(m, ...) 
-# replacing the existing static if/elif/elif block
-# ---------------------------------------------------------------------
-
-# --- Pre-compute values needed for all three insights ---
+# computing values needed for all dynamic map insights 
 
 # Incident Volume
 incident_volume_ranked = (
