@@ -420,7 +420,7 @@ st.markdown(f"""
   suggesting potential seasonal drivers.
 - Fire incidents represent their largest share of the monthly workload in **{fire_share_peak_month}**
   ({fire_share_peak_val:.1f}% of all incidents that month), compared to only **{fire_share_low_val:.1f}%
-  in {fire_share_low_month}** — a {round(fire_share_peak_val - fire_share_low_val, 1)} percentage point
+  in {fire_share_low_month}**, a {round(fire_share_peak_val - fire_share_low_val, 1)} percentage point
   seasonal shift in fire risk.
 """)
 
