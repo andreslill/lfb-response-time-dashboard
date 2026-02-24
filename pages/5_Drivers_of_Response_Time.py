@@ -485,18 +485,28 @@ turnout_range = (
     hourly_components["TurnoutMedian"].min()
 )
 
-range_ratio = round(travel_range / turnout_range, 1) if turnout_range > 0 else 0
+if travel_range > turnout_range:
+    dominant = "Travel"
+    other = "Turnout"
+    dominant_range = travel_range
+    other_range = turnout_range
+else:
+    dominant = "Turnout"
+    other = "Travel"
+    dominant_range = turnout_range
+    other_range = travel_range
+
+range_ratio = round(dominant_range / other_range, 1) if other_range > 0 else 0
 
 st.markdown(f"""
 **Key Insight ({period_label})**
 
-- Travel time shows greater hourly variation than turnout time,
-  fluctuating by **{travel_range:.2f} minutes** across the day
-  and peaking around **{peak_hour}:00**.
-- Turnout time varies by **{turnout_range:.2f} minutes** —
+- **{dominant} time** shows greater hourly variation, fluctuating by 
+  **{dominant_range:.2f} minutes** across the day and peaking around **{peak_hour}:00**.
+- **{other} time** varies by **{other_range:.2f} minutes** —
   {"approximately the same magnitude, suggesting hourly conditions affect both components similarly."
   if abs(travel_range - turnout_range) < 0.15
-  else f"{range_ratio}x less than travel time, confirming that station mobilisation is more consistent throughout the day."}
+  else f"{range_ratio}x less, confirming that {'station mobilisation' if dominant == 'Travel' else 'travel conditions'} is more consistent throughout the day."}
 """)
 
 
