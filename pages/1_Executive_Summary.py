@@ -149,10 +149,6 @@ filtered_incidents = (
     .drop_duplicates("IncidentNumber")
     .copy()
 )
-
-#st.write("Filtered DF rows:", len(filtered_df))
-#st.write("Unique IncidentNumber in filtered_df:", filtered_df["IncidentNumber"].nunique())
-#st.write("Filtered incidents rows:", len(filtered_incidents))
 # ---------------------------------------------------------------------
 # KPIs
 
@@ -200,6 +196,8 @@ ax.axvline(6, color="red", linestyle="--", linewidth=2, label="6-min target")
 ax.axvline(median, color="black", linewidth=2, label=f"Median ({median:.2f})")
 ax.axvline(mean, color="blue", linestyle="--", label=f"Mean ({mean:.2f})")
 ax.axvline(p90, color="purple", linestyle=":", label=f"P90 ({p90:.2f})")
+
+ax.set_xlim(0, 15)
 
 ax.set_xlabel("Attendance Time (minutes)")
 ax.set_ylabel("Share of Incidents (%)")  # ← Y-Achse angepasst
