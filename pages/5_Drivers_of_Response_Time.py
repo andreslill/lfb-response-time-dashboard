@@ -485,16 +485,18 @@ turnout_range = (
     hourly_components["TurnoutMedian"].min()
 )
 
+range_ratio = round(travel_range / turnout_range, 1) if turnout_range > 0 else 0
+
 st.markdown(f"""
+**Key Insight ({period_label})**
 
-**Key Insights**
-
-- Travel time drives hourly performance variation, fluctuating by approximately **{travel_range:.2f} minutes** across the day
+- Travel time shows greater hourly variation than turnout time,
+  fluctuating by **{travel_range:.2f} minutes** across the day
   and peaking around **{peak_hour}:00**.
-- Turnout time remains comparatively stable, with a variation of **{turnout_range:.2f} minutes**.
-- This pattern conirms that performance differences are linked to travel constraints rather than station mobilisation.
-
-
+- Turnout time varies by **{turnout_range:.2f} minutes** —
+  {"approximately the same magnitude, suggesting hourly conditions affect both components similarly."
+  if abs(travel_range - turnout_range) < 0.15
+  else f"{range_ratio}x less than travel time, confirming that station mobilisation is more consistent throughout the day."}
 """)
 
 
