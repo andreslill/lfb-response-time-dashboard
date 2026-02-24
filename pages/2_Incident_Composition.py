@@ -226,6 +226,59 @@ st.markdown(f"""
 
 
 # ---------------------------------------------------------------------
+# Show Special Service Type Breakdown
+
+with st.expander("Show Special Service Type Breakdown"):
+
+    st.subheader("Top 10 Special Service Incident Categories")
+
+    special_df = (
+        filtered_incidents[
+            filtered_incidents["IncidentGroup"] == "Special Service"
+        ]
+        .groupby("SpecialServiceType", observed=True)
+        .size()
+        .sort_values(ascending=False)
+        .head(10)
+        .reset_index(name="IncidentCount")
+    )
+
+    special_df["Percent"] = (
+        special_df["IncidentCount"] / special_df["IncidentCount"].sum() * 100
+    ).round(1)
+
+    fig, ax = plt.subplots(figsize=(FIG_WIDTH, FIG_HEIGHT_MEDIUM))
+
+    sns.barplot(
+        data=special_df,
+        x="Percent",
+        y="SpecialServiceType",
+        order=special_df["SpecialServiceType"],
+        color="#1F4E79",  # ← dein primaryColor aus config.toml
+        ax=ax
+    )
+
+    ax.set_xlabel("Share of Special Service Incidents (%)")
+    ax.set_ylabel("Special Service Category")
+
+    style_axes(ax)
+    sns.despine()
+    fig.tight_layout()
+
+    st.pyplot(fig)
+
+    # Dynamic Markdown
+    top_type = special_df.iloc[0]["SpecialServiceType"]
+    top_pct  = special_df.iloc[0]["Percent"]
+    top3_pct = special_df.head(3)["Percent"].sum()
+
+    st.markdown(f"""
+- **{top_type}** is the most common Special Service type,
+  accounting for **{top_pct:.1f}%** of all Special Service incidents.
+- The top 3 categories together represent **{top3_pct:.1f}%** of Special Service demand.
+    """)
+    
+# ---------------------------------------------------------------------
 st.markdown("---")
 # ---------------------------------------------------------------------
 # Lineplot
