@@ -364,6 +364,24 @@ monthly_fire = (
 fire_peak_month = monthly_fire.idxmax()
 fire_peak_value = int(monthly_fire.max())
 
+# Month with highest Fire share relative to total incidents
+monthly_fire_share = (
+    filtered_incidents[filtered_incidents["IncidentGroup"] == "Fire"]
+    .groupby("MonthName")
+    .size()
+    .reindex(month_order)
+    .dropna()
+    .div(
+        filtered_incidents.groupby("MonthName").size().reindex(month_order).dropna()
+    )
+    .mul(100)
+    .round(1)
+)
+
+fire_share_peak_month = monthly_fire_share.idxmax()
+fire_share_peak_val   = monthly_fire_share.max()
+fire_share_low_month  = monthly_fire_share.idxmin()
+fire_share_low_val    = monthly_fire_share.min()
 
 # False Alarm 
 monthly_false = (
@@ -396,11 +414,14 @@ st.markdown(f"""
 
 - Overall incident demand peaks in **{peak_month} ({peak_value:,})** and reaches its lowest level in **{low_month} ({low_value:,})**,
   representing a seasonal variation of approximately **{seasonal_range_pct}%**.
-- Fire-related incidents show a pronounced concentration in summer, peaking in **{fire_peak_month} ({fire_peak_value:,})**,
-  suggesting potential seasonal drivers.
 - False alarms follow a similar demand curve, with the highest number of incidents observed in **{false_peak_month} ({false_peak_value:,})**.
 - Special Services also display slight seasonal variation, with a peak in **{special_peak_month} ({special_peak_value:,})**.
-- Despite monthly fluctuations, the relative ranking and proportional composition of incident types remain consistent throughout the year.
+- Fire-related incidents show a pronounced concentration in summer, peaking in **{fire_peak_month} ({fire_peak_value:,})**,
+  suggesting potential seasonal drivers.
+- Fire incidents represent their **largest share of the monthly workload in {fire_share_peak_month}**
+  ({fire_share_peak_val:.1f}% of all incidents that month), compared to only **{fire_share_low_val:.1f}%
+  in {fire_share_low_month}**, a {round(fire_share_peak_val - fire_share_low_val, 1)} percentage point
+  seasonal shift in fire risk.
 """)
 
 
@@ -491,6 +512,64 @@ fig.tight_layout()
 
 st.pyplot(fig)
 
+# ---------------------------------------------------------------------
+# Dynamic Markdown – Heatmap
+
+# Peak hour and day for selected incident type
+heatmap_long = heatmap_df.groupby(["Weekday", "HourOfCall"]).size().reset_index(name="Count")
+
+# Peak hour overall
+hourly_totals = heatmap_df.groupby("HourOfCall").size()
+peak_hour     = int(hourly_totals.idxmax())
+peak_hour_val = int(hourly_totals.max())
+low_hour      = int(hourly_totals.idxmin())
+low_hour_val  = int(hourly_totals.min())
+
+# Peak day overall
+daily_totals  = heatmap_df.groupby("Weekday").size().reindex(weekday_order).dropna()
+peak_day      = daily_totals.idxmax()
+peak_day_val  = int(daily_totals.max())
+low_day       = daily_totals.idxmin()
+low_day_val   = int(daily_totals.min())
+
+# Peak hour-day combination
+peak_combo    = heatmap_long.loc[heatmap_long["Count"].idxmax()]
+peak_combo_day  = peak_combo["Weekday"]
+peak_combo_hour = int(peak_combo["HourOfCall"])
+peak_combo_val  = int(peak_combo["Count"])
+
+# Night hours (0–6) vs daytime (7–22)
+night_avg = hourly_totals[hourly_totals.index <= 6].mean()
+day_avg   = hourly_totals[(hourly_totals.index >= 7) & (hourly_totals.index <= 22)].mean()
+day_night_ratio = round(day_avg / night_avg, 1) if night_avg > 0 else 0
+
+# Weekend vs weekday
+weekdays_list = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+weekend_list  = ["Saturday", "Sunday"]
+
+weekday_avg = daily_totals[daily_totals.index.isin(weekdays_list)].mean()
+weekend_avg = daily_totals[daily_totals.index.isin(weekend_list)].mean()
+weekend_diff_pct = round(((weekend_avg - weekday_avg) / weekday_avg) * 100, 1) if weekday_avg > 0 else 0
+weekend_pattern  = "higher" if weekend_diff_pct > 0 else "lower"
+
+# Incident type label for text
+type_label = selected_incident_type if selected_incident_type != "All" else "overall"
+
+st.markdown(f"""
+**Key Insights**
+
+- **{type_label.capitalize()} incidents** peak at **{peak_hour:02d}:00**
+  ({peak_hour_val:,} incidents) and are lowest at **{low_hour:02d}:00** ({low_hour_val:,} incidents).
+- The busiest single hour-day combination is **{peak_combo_day} at {peak_combo_hour:02d}:00**
+  ({peak_combo_val:,} incidents).
+- Daytime demand (**07:00–22:00**) averages **{day_night_ratio}x** more incidents per hour
+  than the night period (00:00–06:00).
+- **{peak_day}** is the busiest day of the week ({peak_day_val:,} incidents),
+  while **{low_day}** records the lowest volume ({low_day_val:,} incidents).
+- Weekend incident volumes are **{abs(weekend_diff_pct):.1f}% {weekend_pattern}**
+  than the weekday average, suggesting {"higher leisure and social activity driving demand"
+  if weekend_diff_pct > 0 else "reduced commercial and occupational activity at weekends"}.
+""")
 
 
 
