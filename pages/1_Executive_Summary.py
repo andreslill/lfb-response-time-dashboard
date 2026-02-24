@@ -202,7 +202,7 @@ ax.axvline(mean, color="blue", linestyle="--", label=f"Mean ({mean:.2f})")
 ax.axvline(p90, color="purple", linestyle=":", label=f"P90 ({p90:.2f})")
 
 ax.set_xlabel("Attendance Time (minutes)")
-ax.set_ylabel("Share of Incidents (%)")  
+ax.set_ylabel("Share of Incidents (%)")  # ← Y-Achse angepasst
 
 style_axes(ax)
 
@@ -216,16 +216,19 @@ st.pyplot(fig)
 # ---------------------------------------------------------------------
 # Key Insights
 
-st.markdown("**Key Insights:**")
+above_target = 100 - response_within_6min
+skewness = round(response_minutes.skew(), 2)
+mean_median_gap = round(mean - median, 2)
 
 st.markdown(f"""
-- Across {period_label} ({incident_label.lower()}), response performance remains stable,
-  with the 6-minute target achieved in approximately {response_within_6min:.1f}% of incidents.
-- Extreme delays exceeding 10 min affect only a small share of incidents,
-  yet they represent a relevant risk.
+- Across {period_label} ({incident_label.lower()}), the 6-minute target is met in
+  **{response_within_6min:.1f}%** of incidents, meaning **{above_target:.1f}%** exceed it.
+- The mean ({mean:.2f} min) is **{mean_median_gap:.2f} min above the median ({median:.2f} min)**,
+  confirming a right-skewed distribution where a minority of delayed incidents
+  pull the average upward.
+- Extreme delays above 10 minutes affect **{extreme_delay_rate:.1f}%** of incidents
+  {", well within acceptable range." if extreme_delay_rate < 5 else ", exceeding the 5% warning threshold."}
 """)
-
-
 
 
 
