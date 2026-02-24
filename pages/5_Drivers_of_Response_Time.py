@@ -295,7 +295,7 @@ slowest_turnout_median = borough_decomp["TurnoutMedian"].median()
 slowest_travel_median = borough_decomp["TravelMedian"].median()
 
 st.markdown(f"""
-**Key Insight ({period_label})**
+**Key Insights**
 
 - Travel accounts for **{travel_share_pct:.0f}%** of the median response time.
 - Among the slowest boroughs, median turnout time is **{slowest_turnout_median:.2f} minutes**,
@@ -488,7 +488,7 @@ turnout_range = (
 
 st.markdown(f"""
 
-**Key Insight ({period_label})**
+**Key Insights**
 
 - Travel time drives hourly performance variation, fluctuating by approximately **{travel_range:.2f} minutes** across the day
   and peaking around **{peak_hour}:00**.
@@ -639,8 +639,9 @@ else:
 
 top_driver = top_delay.iloc[0]
 
-st.markdown(
-    f"""
+st.markdown(f"""
+
+**Key Insights**
 
 - A substantial share of exceedances (**{not_held_up_percent:.1f}%**) are recorded without
   a specific delay factor ("Not held up"), indicating that most exceedances occur under normal
@@ -842,35 +843,47 @@ else:  # Not held up rate (%)
 # ---------------------------------------------------------------------
 st.markdown("---")
 # ---------------------------------------------------------------------
-
-st.markdown("""
 ### Key Takeaways:
 
 
-- Geographic structure is the primary driver of response
-  performance differences, with borough size strongly associated
-  with both longer response times and lower 6-minute compliance.
+st.markdown(f"""
+### Key Takeaways
 
-- Travel time explains the majority of both geographic and hourly
-  variation in response performance throughout the day.
-
-
-
-### Implication:
-
-- Based on these findings, improvements in response performance are more likely
-  to result from optimising geographic coverage and station distribution than from
-  additional refinements to mobilisation processes.
+- Travel time accounts for **{travel_share_pct:.0f}%** of median response time,
+  confirming it as the primary driver of geographic and hourly variation.
+- Turnout time remains stable across boroughs (IQR: {turnout_iqr_sec:.0f} s),
+  while travel time varies considerably (IQR: {travel_iqr_sec:.0f} s).
+- **{not_held_up_percent:.1f}%** of 6-minute exceedances have no recorded delay reason,
+  suggesting structural rather than operational causes.
 """)
 
 
 
 
+# Current calculation (sum of medians)
+#overall_turnout = filtered_incidents["TurnoutMinutes"].median()
+#overall_travel = filtered_incidents["TravelMinutes"].median()
+#total_component = overall_turnout + overall_travel
+#travel_share_pct_current = (overall_travel / total_component) * 100
+
+# Alternative calculation (median of sum)
+#total_attendance = filtered_incidents["TravelMinutes"].add(
+#    filtered_incidents["TurnoutMinutes"]
+#).median()
+#travel_share_pct_alternative = (overall_travel / total_attendance) * 100
+
+# Display
+#col1, col2, col3, col4 = st.columns(4)
+#col1.metric("Median Turnout", f"{overall_turnout:.2f} min")
+#col2.metric("Median Travel", f"{overall_travel:.2f} min")
+#col3.metric("Travel Share (sum of medians)", f"{travel_share_pct_current:.1f}%")
+#col4.metric("Travel Share (median of sum)", f"{travel_share_pct_alternative:.1f}%")
+
+#st.write(f"**Sum of medians:** {total_component:.3f} min")
+#st.write(f"**Median of sum:** {total_attendance:.3f} min")
+#st.write(f"**Difference:** {abs(total_component - total_attendance):.3f} min")
 
 
-
-
-
-
-
+#st.write(f"**Median turnout:** {overall_turnout:.3f} min")
+#st.write(f"**Median travel:**  {overall_travel:.3f} min")
 
