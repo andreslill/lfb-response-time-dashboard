@@ -1381,22 +1381,6 @@ st.markdown(f"""
 st.markdown("---")
 # ---------------------------------------------------------------------
 
-
-st.markdown(f"""
-### Key Takeaways
-- Borough size shows a **{interpret_strength(r).lower()}** correlation with median 
-  response time (r = {r:.2f}) and a **{strength_c}** correlation with 
-  6-minute compliance (r = {r_c:.2f}).
-- Geographic scale plays a central role in shaping response performance 
-  across boroughs.
-""")
-
-st.markdown("<br><br><br><br><br><br><br><br><br>", unsafe_allow_html=True)
-
-# ---------------------------------------------------------------------
-st.markdown("---")
-# ---------------------------------------------------------------------
-
 # Bubbleplot
 
 
@@ -1597,4 +1581,19 @@ with st.expander("Show Borough Size, Volume & Compliance Overview (Bubble Chart)
     """
     )
 
+# ---------------------------------------------------------------------
+st.markdown("---")
+# ---------------------------------------------------------------------
 
+st.markdown(f"""
+### Key Takeaway
+
+- Borough size is the primary driver of geographic variation in response performance,
+  strongly associated with both longer response times (r = {r:.2f}) 
+  and lower 6-minute compliance (r = {r_c:.2f}).
+""")
+
+
+# ---------------------------------------------------------------------
+st.markdown("---")
+# ---------------------------------------------------------------------
