@@ -503,7 +503,7 @@ st.markdown(f"""
 
 - **{dominant} time** shows greater hourly variation, fluctuating by 
   **{dominant_range:.2f} minutes** across the day and peaking around **{peak_hour}:00**.
-- **{other} time** varies by **{other_range:.2f} minutes** —
+- **{other} time** varies by **{other_range:.2f} minutes**,
   {"approximately the same magnitude, suggesting hourly conditions affect both components similarly."
   if abs(travel_range - turnout_range) < 0.15
   else f"{range_ratio}x less, confirming that {'station mobilisation' if dominant == 'Travel' else 'travel conditions'} is more consistent throughout the day."}
