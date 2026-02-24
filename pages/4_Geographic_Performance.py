@@ -367,7 +367,7 @@ else:
 
 st.markdown(f"""
 
-**Key Insight:**
+**Key Insights**
 
 - Outer London has a higher median response time **({outer_value:.2f} min)** 
   than Inner London **({inner_value:.2f} min)**.
@@ -376,8 +376,6 @@ st.markdown(f"""
 
 with st.expander("Show Inner vs Outer Borough Classification"):
 
-    
-    import folium
 
     st.subheader("Classification: Inner vs Outer London")
 
@@ -654,45 +652,137 @@ folium.GeoJson(
 st_folium(m, use_container_width=True, height=600)
 
 # ---------------------------------------------------
-# Map Insight (direct interpretation of the map) 
+
+
+
+
+
+
+
+
+
+
+
+# ---------------------------------------------------------------------
+# Dynamic Map Insights
+# Place this block directly after st_folium(m, ...) 
+# replacing the existing static if/elif/elif block
+# ---------------------------------------------------------------------
+
+# --- Pre-compute values needed for all three insights ---
+
+# Incident Volume
+incident_volume_ranked = (
+    filtered_incidents
+    .groupby("IncGeo_BoroughName")
+    .size()
+    .reset_index(name="IncidentCount")
+    .sort_values("IncidentCount", ascending=False)
+)
+
+highest_volume_borough = incident_volume_ranked.iloc[0]["IncGeo_BoroughName"]
+highest_volume_val     = incident_volume_ranked.iloc[0]["IncidentCount"]
+lowest_volume_borough  = incident_volume_ranked.iloc[-1]["IncGeo_BoroughName"]
+lowest_volume_val      = incident_volume_ranked.iloc[-1]["IncidentCount"]
+
+# Median Response Time
+rt_ranked = (
+    filtered_incidents
+    .groupby("IncGeo_BoroughName")["FirstPumpArriving_AttendanceTime"]
+    .median()
+    .div(60)
+    .reset_index(name="MedianResponseMinutes")
+    .sort_values("MedianResponseMinutes")
+)
+
+fastest_map_borough  = rt_ranked.iloc[0]["IncGeo_BoroughName"]
+fastest_map_val      = rt_ranked.iloc[0]["MedianResponseMinutes"]
+slowest_map_borough  = rt_ranked.iloc[-1]["IncGeo_BoroughName"]
+slowest_map_val      = rt_ranked.iloc[-1]["MedianResponseMinutes"]
+rt_map_spread        = slowest_map_val - fastest_map_val
+
+# Compliance Rate
+comp_ranked = (
+    borough_compliance
+    .sort_values("ComplianceRate", ascending=False)
+)
+
+highest_comp_map_borough = comp_ranked.iloc[0]["IncGeo_BoroughName"]
+highest_comp_map_val     = comp_ranked.iloc[0]["ComplianceRate"]
+lowest_comp_map_borough  = comp_ranked.iloc[-1]["IncGeo_BoroughName"]
+lowest_comp_map_val      = comp_ranked.iloc[-1]["ComplianceRate"]
+comp_map_spread          = highest_comp_map_val - lowest_comp_map_val
+
+# Check whether slowest boroughs are outer London
+# (used to make the narrative smarter)
+outer_boroughs = borough_df[borough_df["AreaType"] == "Outer London"]["IncGeo_BoroughName"].tolist()
+slowest_is_outer = slowest_map_borough in outer_boroughs
+lowest_comp_is_outer = lowest_comp_map_borough in outer_boroughs
+
+# ---------------------------------------------------
+# Dynamic Map Insights
+# Correct insight based on selected metric
+
 if metric_choice == "Incident Volume":
     st.markdown(f"""
-    **Map Insight**
+**Map Insight**
 
-   - Incident demand is heavily concentrated in central boroughs, particularly Westminster.
-   - Outer boroughs generally experience lower incident volumes.
+- Incident demand is most concentrated in **{highest_volume_borough}**
+  ({highest_volume_val:,} incidents), reflecting high population density,
+  commercial activity, and tourism in central London.
+- **{lowest_volume_borough}** records the lowest incident volume
+  ({lowest_volume_val:,} incidents).
 
-    Despite this central concentration of incidents, slower response performance is not primarily observed
-    in high volume boroughs. This suggests that the number of incidents alone does not explain
-    geographic differences in response times.
-    """)
+Despite this central concentration of incidents, slower response performance
+is not primarily observed in high-volume boroughs. This suggests that the
+number of incidents alone does not explain geographic differences in response times.
+""")
 
 elif metric_choice == "Median Response Time":
+    outer_note = (
+        "confirming that larger outer boroughs face the greatest structural constraints."
+        if slowest_is_outer
+        else "suggesting a complex interaction between geography and other operational factors."
+    )
     st.markdown(f"""
-    **Map Insight**
+**Map Insight**
 
-    - Median response times vary across boroughs.  
-    - Longer response times are clustered in larger outer boroughs
-    - Central areas generally demonstrate faster attendance.
+- Median response times vary across boroughs, ranging from
+  **{fastest_map_val:.2f} min ({fastest_map_borough})**
+  to **{slowest_map_val:.2f} min ({slowest_map_borough})**
+  — a spread of **{rt_map_spread:.2f} minutes**.
+- Longer response times are clustered in larger outer boroughs,
+  while central areas generally demonstrate faster attendance.
+- **{slowest_map_borough}** is {'an outer London borough' if slowest_is_outer else 'notable as a non-outer borough'},
+  {outer_note}
 
-    The geographic pattern of slower performance in outer boroughs
-    contrasts with the central concentration of high incident numbers,
-    indicating that borough size and travel distance may play a stronger
-    role than incident volume.
-    """)
-    
+The geographic pattern of slower performance in outer boroughs contrasts with
+the central concentration of high incident numbers, indicating that borough size
+and travel distance play a stronger role than incident volume.
+""")
+
 elif metric_choice == "Response within 6 min (%)":
+    outer_note = (
+        "consistent with the structural disadvantage faced by larger outer boroughs."
+        if lowest_comp_is_outer
+        else "suggesting additional factors beyond geographic size may be at play."
+    )
     st.markdown(f"""
-    **Map Insight**
+**Map Insight**
 
-    - Response within 6 minutes rate varies across boroughs.  
-    - Higher compliance rates cluster in central boroughs, 
-    - whereas several outer boroughs show lower target achievement.
+- 6-minute compliance rates range from
+  **{highest_comp_map_val:.1f}% ({highest_comp_map_borough})**
+  to **{lowest_comp_map_val:.1f}% ({lowest_comp_map_borough})**
+  — a gap of **{comp_map_spread:.1f} percentage points** across boroughs.
+- Higher compliance rates cluster in central boroughs,
+  while several outer boroughs show significantly lower target achievement.
+- The lowest-performing borough, **{lowest_comp_map_borough}**,
+  is {'an outer London borough' if lowest_comp_is_outer else 'notable as a non-outer borough'},
+  {outer_note}
 
-    This pattern mirrors the distribution of median response times
-    and reinforces the structural relationship between borough size
-    and response time.
-    """)
+This pattern mirrors the distribution of median response times and reinforces
+the structural relationship between borough size and response performance.
+""")
 
 # ---------------------------------------------------------------------
 # Expandable Incident Volume Ranking
@@ -1151,7 +1241,7 @@ significance_outer = (
 
 
 st.markdown(f"""
-**Key Insight:**
+**Key Insights**
 
 - Borough size is {interpret_strength(r).lower()} and {interpret_direction(r).lower()} with median response time 
   **(r = {r:.2f}, R² = {r_squared:.2f})**, explaining approximately 
@@ -1279,7 +1369,7 @@ significance_c = (
 
 st.markdown(f"""
 
-**Key Insight:**
+**Key Insights**
 
 - The relationship between borough size and 6 minute compliance is **{strength_c} and {direction_c}**
 (r = {r_c:.2f}, R² = {r2_c:.2f}).
@@ -1292,13 +1382,13 @@ st.markdown("---")
 # ---------------------------------------------------------------------
 
 
-st.markdown("""
+st.markdown(f"""
 ### Key Takeaways
-
-- Borough size appears to be the main driver of geographic variation in response performance,
-strongly associated with both longer response times and lower 6-minute target compliance.
-- While operational factors may also contribute, geographic scale plays a central role
-in shaping response performance across boroughs.
+- Borough size shows a **{interpret_strength(r).lower()}** correlation with median 
+  response time (r = {r:.2f}) and a **{strength_c}** correlation with 
+  6-minute compliance (r = {r_c:.2f}).
+- Geographic scale plays a central role in shaping response performance 
+  across boroughs.
 """)
 
 st.markdown("<br><br><br><br><br><br><br><br><br>", unsafe_allow_html=True)
@@ -1319,7 +1409,7 @@ medium_label = f"Medium volume: {int(low_threshold)+1}–{int(high_threshold)} i
 high_label = f"High volume: > {int(high_threshold)} incidents"
 
 # ----------------------------------------------------------
-with st.expander("Show Borough Level Performance Overview"):
+with st.expander("Show Borough Size, Volume & Compliance Overview (Bubble Chart)"):
 
     st.subheader("Borough Size vs. Median Response Time")
 
@@ -1506,8 +1596,5 @@ with st.expander("Show Borough Level Performance Overview"):
 
     """
     )
-
-
-
 
 
