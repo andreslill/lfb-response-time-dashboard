@@ -765,61 +765,7 @@ the structural relationship between borough size and response performance.
 """)
 
 # ---------------------------------------------------------------------
-# Expandable Incident Volume Ranking
 
-with st.expander("Incident Volume by Borough Ranking"):
-
-    st.subheader("Borough Ranking: Incident Volume")
-
-    incident_volume_by_borough = (
-        filtered_incidents
-        .groupby("IncGeo_BoroughName")
-        .size()
-        .reset_index(name="IncidentCount")
-        .sort_values("IncidentCount", ascending=False)  
-    )
-
-    fig, ax = plt.subplots(figsize=(10, 12))
-
-    sns.barplot(
-        data=incident_volume_by_borough,
-        y="IncGeo_BoroughName",
-        x="IncidentCount",
-        order=incident_volume_by_borough["IncGeo_BoroughName"],
-        palette="Blues_r",   
-        ax=ax
-    )
-
-    ax.set_xlabel("Number of Incidents")
-    ax.set_ylabel("")
-
-    sns.despine()
-
-    st.pyplot(fig)
-
-
-    # Dynamic Ranking Insight
-
-    highest_borough = incident_volume_by_borough.iloc[0]
-    lowest_borough = incident_volume_by_borough.iloc[-1]
-
-    spread = (
-        highest_borough["IncidentCount"]
-        - lowest_borough["IncidentCount"]
-    )
-
-    st.markdown(f"""
-    **Ranking Insight**
-
-    - Highest incident volume: **{highest_borough['IncGeo_BoroughName']}** ({highest_borough['IncidentCount']:,})
-    - Lowest incident volume: **{lowest_borough['IncGeo_BoroughName']}** ({lowest_borough['IncidentCount']:,})
-    - Volume spread: **{spread:,} incidents**
-
-    While incident demand is concentrated in central boroughs due to high population density, commerce, and tourism,
-    incident volume doesn’t necessarily lead to slower response times.
-    """)
-
-# ---------------------------------------------------
 # Expandable Response Time Ranking
 
 with st.expander("Show Response Time by Borough Ranking"):
@@ -956,6 +902,61 @@ with st.expander("Show Response within 6 min Rate by Borough Ranking"):
     Compliance rates vary considerably across boroughs. The fact that lower performance is concentrated
     in larger outer boroughs highlights the impact of geographic scale on response times.
     """)
+# ---------------------------------------------------------------------
+# Expandable Incident Volume Ranking
+
+with st.expander("Incident Volume by Borough Ranking"):
+
+    st.subheader("Borough Ranking: Incident Volume")
+
+    incident_volume_by_borough = (
+        filtered_incidents
+        .groupby("IncGeo_BoroughName")
+        .size()
+        .reset_index(name="IncidentCount")
+        .sort_values("IncidentCount", ascending=False)  
+    )
+
+    fig, ax = plt.subplots(figsize=(10, 12))
+
+    sns.barplot(
+        data=incident_volume_by_borough,
+        y="IncGeo_BoroughName",
+        x="IncidentCount",
+        order=incident_volume_by_borough["IncGeo_BoroughName"],
+        palette="Blues_r",   
+        ax=ax
+    )
+
+    ax.set_xlabel("Number of Incidents")
+    ax.set_ylabel("")
+
+    sns.despine()
+
+    st.pyplot(fig)
+
+
+    # Dynamic Ranking Insight
+
+    highest_borough = incident_volume_by_borough.iloc[0]
+    lowest_borough = incident_volume_by_borough.iloc[-1]
+
+    spread = (
+        highest_borough["IncidentCount"]
+        - lowest_borough["IncidentCount"]
+    )
+
+    st.markdown(f"""
+    **Ranking Insight**
+
+    - Highest incident volume: **{highest_borough['IncGeo_BoroughName']}** ({highest_borough['IncidentCount']:,})
+    - Lowest incident volume: **{lowest_borough['IncGeo_BoroughName']}** ({lowest_borough['IncidentCount']:,})
+    - Volume spread: **{spread:,} incidents**
+
+    While incident demand is concentrated in central boroughs due to high population density, commerce, and tourism,
+    incident volume doesn’t necessarily lead to slower response times.
+    """)
+
 
 # ---------------------------------------------------------------------
 st.markdown("---")
