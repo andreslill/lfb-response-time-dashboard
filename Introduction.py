@@ -23,7 +23,7 @@ st.markdown("""
 The **London Fire Brigade (LFB)** is the busiest fire and rescue service in the United Kingdom
 and one of the largest firefighting organisations in the world. Responsible for a city of over
 9 million people across 1,572 km², the LFB responds to fires, road traffic collisions,
-flooding, and a wide range of special services — 24 hours a day, 365 days a year.
+flooding, and a wide range of special services.
 
 This dashboard analyses **incident and mobilisation records from 2021 to 2025**, covering
 approximately **586,000 incidents** across all 32 London boroughs and the City of London.
