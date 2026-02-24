@@ -198,6 +198,7 @@ ax.axvline(mean, color="blue", linestyle="--", label=f"Mean ({mean:.2f})")
 ax.axvline(p90, color="purple", linestyle=":", label=f"P90 ({p90:.2f})")
 
 ax.set_xlim(0, 15)
+st.caption("Note: X-axis capped at 15 minutes for readability. ~1–2% of incidents exceed this threshold.")
 
 ax.set_xlabel("Attendance Time (minutes)")
 ax.set_ylabel("Share of Incidents (%)")  # ← Y-Achse angepasst
