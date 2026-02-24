@@ -354,16 +354,16 @@ with st.expander("Validation: Turnout time is stable across boroughs"):
     travel_max_med = borough_medians["TravelMedian"].max()
     travel_iqr_min = borough_medians["TravelMedian"].quantile(0.75) - borough_medians["TravelMedian"].quantile(0.25)
     travel_iqr_sec = travel_iqr_min * 60
-
-   st.markdown(f"""
-- Overall median turnout: **{turnout_overall_sec/60:.2f} min**
-- Borough median turnout range: **{turnout_min_med_sec/60:.2f}–{turnout_max_med_sec/60:.2f} min**
-- Borough median turnout IQR: **{turnout_iqr_sec:.0f} s**
-
-In contrast:
-- Overall median travel: **{travel_overall_min:.2f} min**
-- Borough median travel range: **{travel_min_med:.2f}–{travel_max_med:.2f} min**
-- Borough median travel IQR: **{travel_iqr_sec:.0f} s**
+    
+       st.markdown(f"""
+    - Overall median turnout: **{turnout_overall_sec/60:.2f} min**
+    - Borough median turnout range: **{turnout_min_med_sec/60:.2f}–{turnout_max_med_sec/60:.2f} min**
+    - Borough median turnout IQR: **{turnout_iqr_sec:.0f} s**
+    
+    In contrast:
+    - Overall median travel: **{travel_overall_min:.2f} min**
+    - Borough median travel range: **{travel_min_med:.2f}–{travel_max_med:.2f} min**
+    - Borough median travel IQR: **{travel_iqr_sec:.0f} s**
 
 **Conclusion:** Turnout medians vary only slightly across boroughs,
 while travel medians variation is high, suggesting travel time as
