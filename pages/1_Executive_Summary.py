@@ -177,6 +177,8 @@ st.subheader("Distribution of Response Time")
 
 response_minutes = filtered_incidents["FirstPumpArriving_AttendanceTime"] / 60
 
+pct_above_15 = (response_minutes > 15).mean() * 100
+
 median = response_minutes.median()
 mean = response_minutes.mean()
 p90 = response_minutes.quantile(0.90)
@@ -198,10 +200,10 @@ ax.axvline(mean, color="blue", linestyle="--", label=f"Mean ({mean:.2f})")
 ax.axvline(p90, color="purple", linestyle=":", label=f"P90 ({p90:.2f})")
 
 ax.set_xlim(0, 15)
-st.caption("Note: X-axis capped at 15 minutes for readability. ~1–2% of incidents exceed this threshold.")
+st.caption(f"Note: X-axis capped at 15 minutes for readability. {pct_above_15:.1f}% of incidents exceed this threshold.")
 
 ax.set_xlabel("Attendance Time (minutes)")
-ax.set_ylabel("Share of Incidents (%)")  # ← Y-Achse angepasst
+ax.set_ylabel("Share of Incidents (%)")  
 
 style_axes(ax)
 
