@@ -161,7 +161,7 @@ st.markdown("<br>", unsafe_allow_html=True) # space
 
 # Legend
 
-left, col1, col2, col3, col4, right = st.columns([0.8, 1, 1, 1, 1, 1.5])
+spacer_left, col1, col2, col3, col4, right = st.columns([0.8, 1, 1, 1, 1, 1.5])
 
 col1.markdown("<span style='color:#2ca02c;'>●</span> ≤ 6 min", unsafe_allow_html=True)
 col2.markdown("<span style='color:#f1ce63;'>●</span> 6–8 min", unsafe_allow_html=True)
@@ -174,7 +174,7 @@ filtered_incidents["ResponseMinutes"] = (
     filtered_incidents["FirstPumpArriving_AttendanceTime"] / 60
 )
 
-# Extreme delay KPI (GLOBAL)
+# Extreme delay KPI 
 extreme_delay_rate = (
     (filtered_incidents["ResponseMinutes"] > 10).mean() * 100
 )
@@ -270,10 +270,6 @@ fig.tight_layout()
 
 st.pyplot(fig)
 
-
-extreme_delay_rate = (
-    filtered_incidents["ResponseMinutes"] > 10
-).mean() * 100
 
 # Calculate exceedance
 band_pivot["Exceedance"] = (
@@ -465,7 +461,7 @@ st.markdown(f"""
 - Across all months, **Special Service** consistently records the longest median response times, followed by **Fire**,
   while **False Alarms** remain the fastest category.
 - At peak months, the gap between Special Service and False Alarm reaches approximately
-  ~{peak_gap_seconds:.0f} seconds ({peak_gap_percent:.1f}%, indicating structurally longer response times
+  {peak_gap_seconds:.0f} seconds ({peak_gap_percent:.1f}%), indicating structurally longer response times
   for more complex incidents.
 - Despite moderate seasonal variation, the relative ranking between incident types remains stable throughout the year(s).""")
 
@@ -532,6 +528,11 @@ min_hour = hourly_median.loc[hourly_median["MedianMinutes"].idxmin()]
 ax.scatter(max_hour["HourOfCall"], max_hour["MedianMinutes"], s=80)
 ax.scatter(min_hour["HourOfCall"], min_hour["MedianMinutes"], s=80)
 
+ax.scatter(max_hour["HourOfCall"], max_hour["MedianMinutes"], 
+           s=100, color="red", zorder=5, label=f"Max ({max_val:.2f} min)")
+ax.scatter(min_hour["HourOfCall"], min_hour["MedianMinutes"], 
+           s=100, color="green", zorder=5, label=f"Min ({min_val:.2f} min)")
+ax.legend(frameon=False)
 
 ax.set_xlabel("Hour of Call")
 ax.set_ylabel("Median Response Time (minutes)")
@@ -567,8 +568,9 @@ st.markdown(f"""
 - Differences across incident types reflect operational challenges, with Special Service consistently
   recording longer response times
 - The 6-minute response target is met in {compliance_rate:.1f}% of incidents, demonstrating consistent response performance.
-- 69.5% of incidents are within the 6-minute window. The remaining exceedances point to structural issues rather than
-  being driven by seasonal or hourly effects.
+- {compliance_rate:.1f}% of incidents are within the 6-minute window. 
+  The remaining {100 - compliance_rate:.1f}% point to structural issues 
+  rather than seasonal or hourly effects..
 """)
 
 
@@ -646,25 +648,23 @@ with st.expander("Show detailed response time distribution (Boxplot)"):
 
     st.pyplot(fig)
 
-    st.markdown("""
+    # Dynamic Markdown
 
-    - Response time variability appears to differ across incident types.  
-    - Special Service incidents display a wider interquartile range, while False Alarms exhibit the most consistent response performance.
+    medians = first_pump_df.groupby("IncidentGroup")["AttendanceTimeMinutes"].median()
+    iqrs = (
+        first_pump_df.groupby("IncidentGroup")["AttendanceTimeMinutes"].quantile(0.75)
+        - first_pump_df.groupby("IncidentGroup")["AttendanceTimeMinutes"].quantile(0.25)
+    )
+
+    widest_iqr_type = iqrs.idxmax()
+    fastest_type = medians.idxmin()
+
+    st.markdown(f"""
+    - **{widest_iqr_type}** shows the widest response time spread 
+      **(IQR: {iqrs[widest_iqr_type]:.2f} min)**, indicating greater variability.
+    - **{fastest_type}** records the lowest median **({medians[fastest_type]:.2f} min)** 
+      and most consistent performance.
     """)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

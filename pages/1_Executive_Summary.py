@@ -149,10 +149,6 @@ filtered_incidents = (
     .drop_duplicates("IncidentNumber")
     .copy()
 )
-
-#st.write("Filtered DF rows:", len(filtered_df))
-#st.write("Unique IncidentNumber in filtered_df:", filtered_df["IncidentNumber"].nunique())
-#st.write("Filtered incidents rows:", len(filtered_incidents))
 # ---------------------------------------------------------------------
 # KPIs
 
@@ -181,6 +177,8 @@ st.subheader("Distribution of Response Time")
 
 response_minutes = filtered_incidents["FirstPumpArriving_AttendanceTime"] / 60
 
+pct_above_15 = (response_minutes > 15).mean() * 100
+
 median = response_minutes.median()
 mean = response_minutes.mean()
 p90 = response_minutes.quantile(0.90)
@@ -201,8 +199,11 @@ ax.axvline(median, color="black", linewidth=2, label=f"Median ({median:.2f})")
 ax.axvline(mean, color="blue", linestyle="--", label=f"Mean ({mean:.2f})")
 ax.axvline(p90, color="purple", linestyle=":", label=f"P90 ({p90:.2f})")
 
+ax.set_xlim(0, 15)
+st.caption(f"Note: X-axis capped at 15 minutes for readability. {pct_above_15:.1f}% of incidents exceed this threshold.")
+
 ax.set_xlabel("Attendance Time (minutes)")
-ax.set_ylabel("Share of Incidents (%)")  # ← Y-Achse angepasst
+ax.set_ylabel("Share of Incidents (%)")  
 
 style_axes(ax)
 
@@ -216,16 +217,19 @@ st.pyplot(fig)
 # ---------------------------------------------------------------------
 # Key Insights
 
-st.markdown("**Key Insights:**")
+above_target = 100 - response_within_6min
+skewness = round(response_minutes.skew(), 2)
+mean_median_gap = round(mean - median, 2)
 
 st.markdown(f"""
-- Across {period_label} ({incident_label.lower()}), response performance remains stable,
-  with the 6-minute target achieved in approximately {response_within_6min:.1f}% of incidents.
-- Extreme delays exceeding 10 min affect only a small share of incidents,
-  yet they represent a relevant risk.
+- Across {period_label} ({incident_label.lower()}), the 6-minute target is met in
+  **{response_within_6min:.1f}%** of incidents, meaning **{above_target:.1f}%** exceed it.
+- The mean ({mean:.2f} min) is **{mean_median_gap:.2f} min above the median ({median:.2f} min)**,
+  confirming a right-skewed distribution where a minority of delayed incidents
+  pull the average upward.
+- Extreme delays above 10 minutes affect **{extreme_delay_rate:.1f}%** of incidents
+  {", well within acceptable range." if extreme_delay_rate < 5 else ", exceeding the 5% warning threshold."}
 """)
-
-
 
 
 

@@ -167,10 +167,6 @@ filtered_incidents = (
     .drop_duplicates("IncidentNumber")
     .copy()
 )
-
-#st.write("Filtered DF rows:", len(filtered_df))
-#st.write("Unique IncidentNumber in filtered_df:", filtered_df["IncidentNumber"].nunique())
-#st.write("Filtered incidents rows:", len(filtered_incidents))
 # ---------------------------------------------------------------------
 
 st.header("1. Do Response Times Differ Between Inner and Outer London?")
@@ -367,7 +363,7 @@ else:
 
 st.markdown(f"""
 
-**Key Insight:**
+**Key Insights**
 
 - Outer London has a higher median response time **({outer_value:.2f} min)** 
   than Inner London **({inner_value:.2f} min)**.
@@ -376,8 +372,6 @@ st.markdown(f"""
 
 with st.expander("Show Inner vs Outer Borough Classification"):
 
-    
-    import folium
 
     st.subheader("Classification: Inner vs Outer London")
 
@@ -551,7 +545,7 @@ boroughs = boroughs.merge(
 # Metric Toggle
 metric_choice = st.radio(
     "Select Geographic Metric",
-    ["Incident Volume", "Median Response Time", "Response within 6 min (%)"],
+    ["Median Response Time", "Response within 6 min (%)", "Incident Volume"],
     horizontal=True,
     key="geo_metric_toggle"
 )
@@ -654,102 +648,124 @@ folium.GeoJson(
 st_folium(m, use_container_width=True, height=600)
 
 # ---------------------------------------------------
-# Map Insight (direct interpretation of the map) 
-if metric_choice == "Incident Volume":
-    st.markdown(f"""
-    **Map Insight**
 
-   - Incident demand is heavily concentrated in central boroughs, particularly Westminster.
-   - Outer boroughs generally experience lower incident volumes.
+# computing values needed for all dynamic map insights 
 
-    Despite this central concentration of incidents, slower response performance is not primarily observed
-    in high volume boroughs. This suggests that the number of incidents alone does not explain
-    geographic differences in response times.
-    """)
+# Incident Volume
+incident_volume_ranked = (
+    filtered_incidents
+    .groupby("IncGeo_BoroughName")
+    .size()
+    .reset_index(name="IncidentCount")
+    .sort_values("IncidentCount", ascending=False)
+)
 
-elif metric_choice == "Median Response Time":
-    st.markdown(f"""
-    **Map Insight**
+highest_volume_borough = incident_volume_ranked.iloc[0]["IncGeo_BoroughName"]
+highest_volume_val     = incident_volume_ranked.iloc[0]["IncidentCount"]
+lowest_volume_borough  = incident_volume_ranked.iloc[-1]["IncGeo_BoroughName"]
+lowest_volume_val      = incident_volume_ranked.iloc[-1]["IncidentCount"]
 
-    - Median response times vary across boroughs.  
-    - Longer response times are clustered in larger outer boroughs
-    - Central areas generally demonstrate faster attendance.
+# Median Response Time
+rt_ranked = (
+    filtered_incidents
+    .groupby("IncGeo_BoroughName")["FirstPumpArriving_AttendanceTime"]
+    .median()
+    .div(60)
+    .reset_index(name="MedianResponseMinutes")
+    .sort_values("MedianResponseMinutes")
+)
 
-    The geographic pattern of slower performance in outer boroughs
-    contrasts with the central concentration of high incident numbers,
-    indicating that borough size and travel distance may play a stronger
-    role than incident volume.
-    """)
-    
-elif metric_choice == "Response within 6 min (%)":
-    st.markdown(f"""
-    **Map Insight**
+fastest_map_borough  = rt_ranked.iloc[0]["IncGeo_BoroughName"]
+fastest_map_val      = rt_ranked.iloc[0]["MedianResponseMinutes"]
+slowest_map_borough  = rt_ranked.iloc[-1]["IncGeo_BoroughName"]
+slowest_map_val      = rt_ranked.iloc[-1]["MedianResponseMinutes"]
+rt_map_spread        = slowest_map_val - fastest_map_val
 
-    - Response within 6 minutes rate varies across boroughs.  
-    - Higher compliance rates cluster in central boroughs, 
-    - whereas several outer boroughs show lower target achievement.
+# Compliance Rate
+comp_ranked = (
+    borough_compliance
+    .sort_values("ComplianceRate", ascending=False)
+)
 
-    This pattern mirrors the distribution of median response times
-    and reinforces the structural relationship between borough size
-    and response time.
-    """)
+highest_comp_map_borough = comp_ranked.iloc[0]["IncGeo_BoroughName"]
+highest_comp_map_val     = comp_ranked.iloc[0]["ComplianceRate"]
+lowest_comp_map_borough  = comp_ranked.iloc[-1]["IncGeo_BoroughName"]
+lowest_comp_map_val      = comp_ranked.iloc[-1]["ComplianceRate"]
+comp_map_spread          = highest_comp_map_val - lowest_comp_map_val
 
-# ---------------------------------------------------------------------
-# Expandable Incident Volume Ranking
-
-with st.expander("Incident Volume by Borough Ranking"):
-
-    st.subheader("Borough Ranking: Incident Volume")
-
-    incident_volume_by_borough = (
-        filtered_incidents
-        .groupby("IncGeo_BoroughName")
-        .size()
-        .reset_index(name="IncidentCount")
-        .sort_values("IncidentCount", ascending=False)  
-    )
-
-    fig, ax = plt.subplots(figsize=(10, 12))
-
-    sns.barplot(
-        data=incident_volume_by_borough,
-        y="IncGeo_BoroughName",
-        x="IncidentCount",
-        order=incident_volume_by_borough["IncGeo_BoroughName"],
-        palette="Blues_r",   
-        ax=ax
-    )
-
-    ax.set_xlabel("Number of Incidents")
-    ax.set_ylabel("")
-
-    sns.despine()
-
-    st.pyplot(fig)
-
-
-    # Dynamic Ranking Insight
-
-    highest_borough = incident_volume_by_borough.iloc[0]
-    lowest_borough = incident_volume_by_borough.iloc[-1]
-
-    spread = (
-        highest_borough["IncidentCount"]
-        - lowest_borough["IncidentCount"]
-    )
-
-    st.markdown(f"""
-    **Ranking Insight**
-
-    - Highest incident volume: **{highest_borough['IncGeo_BoroughName']}** ({highest_borough['IncidentCount']:,})
-    - Lowest incident volume: **{lowest_borough['IncGeo_BoroughName']}** ({lowest_borough['IncidentCount']:,})
-    - Volume spread: **{spread:,} incidents**
-
-    While incident demand is concentrated in central boroughs due to high population density, commerce, and tourism,
-    incident volume doesn’t necessarily lead to slower response times.
-    """)
+# Check whether slowest boroughs are outer London
+# (used to make the narrative smarter)
+outer_boroughs = borough_df[borough_df["AreaType"] == "Outer London"]["IncGeo_BoroughName"].tolist()
+slowest_is_outer = slowest_map_borough in outer_boroughs
+lowest_comp_is_outer = lowest_comp_map_borough in outer_boroughs
 
 # ---------------------------------------------------
+# Dynamic Map Insights
+# Correct insight based on selected metric
+
+if metric_choice == "Incident Volume":
+    st.markdown(f"""
+**Map Insight**
+
+- Incident demand is most concentrated in **{highest_volume_borough}**
+  ({highest_volume_val:,} incidents), reflecting high population density,
+  commercial activity, and tourism in central London.
+- **{lowest_volume_borough}** records the lowest incident volume
+  ({lowest_volume_val:,} incidents).
+
+Despite this central concentration of incidents, slower response performance
+is not primarily observed in high-volume boroughs. This suggests that the
+number of incidents alone does not explain geographic differences in response times.
+""")
+
+elif metric_choice == "Median Response Time":
+    outer_note = (
+        "confirming that larger outer boroughs face the greatest structural constraints."
+        if slowest_is_outer
+        else "suggesting a complex interaction between geography and other operational factors."
+    )
+    st.markdown(f"""
+**Map Insight**
+
+- Median response times vary across boroughs, ranging from
+  **{fastest_map_val:.2f} min ({fastest_map_borough})**
+  to **{slowest_map_val:.2f} min ({slowest_map_borough})**
+  ,a spread of **{rt_map_spread:.2f} minutes**.
+- Longer response times are clustered in larger outer boroughs,
+  while central areas generally demonstrate faster attendance.
+- **{slowest_map_borough}** is {'an outer London borough' if slowest_is_outer else 'notable as a non-outer borough'},
+  {outer_note}
+
+The geographic pattern of slower performance in outer boroughs contrasts with
+the central concentration of high incident numbers, indicating that borough size
+and travel distance play a stronger role than incident volume.
+""")
+
+elif metric_choice == "Response within 6 min (%)":
+    outer_note = (
+        "consistent with the structural disadvantage faced by larger outer boroughs."
+        if lowest_comp_is_outer
+        else "suggesting additional factors beyond geographic size may be at play."
+    )
+    st.markdown(f"""
+**Map Insight**
+
+- 6-minute compliance rates range from
+  **{highest_comp_map_val:.1f}% ({highest_comp_map_borough})**
+  to **{lowest_comp_map_val:.1f}% ({lowest_comp_map_borough})**
+  ,a gap of **{comp_map_spread:.1f} percentage points** across boroughs.
+- Higher compliance rates cluster in central boroughs,
+  while several outer boroughs show significantly lower target achievement.
+- The lowest-performing borough, **{lowest_comp_map_borough}**,
+  is {'an outer London borough' if lowest_comp_is_outer else 'notable as a non-outer borough'},
+  {outer_note}
+
+This pattern mirrors the distribution of median response times and reinforces
+the structural relationship between borough size and response performance.
+""")
+
+# ---------------------------------------------------------------------
+
 # Expandable Response Time Ranking
 
 with st.expander("Show Response Time by Borough Ranking"):
@@ -886,6 +902,61 @@ with st.expander("Show Response within 6 min Rate by Borough Ranking"):
     Compliance rates vary considerably across boroughs. The fact that lower performance is concentrated
     in larger outer boroughs highlights the impact of geographic scale on response times.
     """)
+# ---------------------------------------------------------------------
+# Expandable Incident Volume Ranking
+
+with st.expander("Incident Volume by Borough Ranking"):
+
+    st.subheader("Borough Ranking: Incident Volume")
+
+    incident_volume_by_borough = (
+        filtered_incidents
+        .groupby("IncGeo_BoroughName")
+        .size()
+        .reset_index(name="IncidentCount")
+        .sort_values("IncidentCount", ascending=False)  
+    )
+
+    fig, ax = plt.subplots(figsize=(10, 12))
+
+    sns.barplot(
+        data=incident_volume_by_borough,
+        y="IncGeo_BoroughName",
+        x="IncidentCount",
+        order=incident_volume_by_borough["IncGeo_BoroughName"],
+        palette="Blues_r",   
+        ax=ax
+    )
+
+    ax.set_xlabel("Number of Incidents")
+    ax.set_ylabel("")
+
+    sns.despine()
+
+    st.pyplot(fig)
+
+
+    # Dynamic Ranking Insight
+
+    highest_borough = incident_volume_by_borough.iloc[0]
+    lowest_borough = incident_volume_by_borough.iloc[-1]
+
+    spread = (
+        highest_borough["IncidentCount"]
+        - lowest_borough["IncidentCount"]
+    )
+
+    st.markdown(f"""
+    **Ranking Insight**
+
+    - Highest incident volume: **{highest_borough['IncGeo_BoroughName']}** ({highest_borough['IncidentCount']:,})
+    - Lowest incident volume: **{lowest_borough['IncGeo_BoroughName']}** ({lowest_borough['IncidentCount']:,})
+    - Volume spread: **{spread:,} incidents**
+
+    While incident demand is concentrated in central boroughs due to high population density, commerce, and tourism,
+    incident volume doesn’t necessarily lead to slower response times.
+    """)
+
 
 # ---------------------------------------------------------------------
 st.markdown("---")
@@ -1151,7 +1222,7 @@ significance_outer = (
 
 
 st.markdown(f"""
-**Key Insight:**
+**Key Insights**
 
 - Borough size is {interpret_strength(r).lower()} and {interpret_direction(r).lower()} with median response time 
   **(r = {r:.2f}, R² = {r_squared:.2f})**, explaining approximately 
@@ -1279,7 +1350,7 @@ significance_c = (
 
 st.markdown(f"""
 
-**Key Insight:**
+**Key Insights**
 
 - The relationship between borough size and 6 minute compliance is **{strength_c} and {direction_c}**
 (r = {r_c:.2f}, R² = {r2_c:.2f}).
@@ -1291,223 +1362,15 @@ st.markdown(f"""
 st.markdown("---")
 # ---------------------------------------------------------------------
 
+st.markdown(f"""
+### Key Takeaway
 
-st.markdown("""
-### Key Takeaways
-
-- Borough size appears to be the main driver of geographic variation in response performance,
-strongly associated with both longer response times and lower 6-minute target compliance.
-- While operational factors may also contribute, geographic scale plays a central role
-in shaping response performance across boroughs.
+- Borough size is the primary driver of geographic variation in response performance,
+  strongly associated with both longer response times (r = {r:.2f}) 
+  and lower 6-minute compliance (r = {r_c:.2f}).
 """)
 
-st.markdown("<br><br><br><br><br><br><br><br><br>", unsafe_allow_html=True)
 
 # ---------------------------------------------------------------------
 st.markdown("---")
 # ---------------------------------------------------------------------
-
-# Bubbleplot
-
-
-# Define volume categories using quantiles (for legend only)
-low_threshold = borough_spatial_extent["IncidentCount"].quantile(0.33)
-high_threshold = borough_spatial_extent["IncidentCount"].quantile(0.66)
-
-low_label = f"Low volume: ≤ {int(low_threshold)} incidents"
-medium_label = f"Medium volume: {int(low_threshold)+1}–{int(high_threshold)} incidents"
-high_label = f"High volume: > {int(high_threshold)} incidents"
-
-# ----------------------------------------------------------
-with st.expander("Show Borough Level Performance Overview"):
-
-    st.subheader("Borough Size vs. Median Response Time")
-
-    bubble_df = borough_spatial_extent.copy()
-
-    # ----------------------------------------------------------
-    # Linear regression model (Area_km2 as predictor)
-    slope, intercept, r_value, p_value, std_err = linregress(
-        bubble_df["Area_km2"],
-        bubble_df["MedianResponseMinutes"]
-    )
-
-    # Model statistics
-    r = r_value
-    p = p_value
-    r_squared = r_value ** 2
-
-    x_range = np.linspace(
-        bubble_df["Area_km2"].min(),
-        bubble_df["Area_km2"].max(),
-        100
-    )
-
-    y_range = slope * x_range + intercept
-
-    # ----------------------------------------------------------
-    # Bubble size scaling
-
-    min_size = 15
-    max_size = 60
-
-    size_scaled = (
-        (bubble_df["IncidentCount"] - bubble_df["IncidentCount"].min()) /
-        (bubble_df["IncidentCount"].max() - bubble_df["IncidentCount"].min())
-    )
-
-    size_scaled = size_scaled * (max_size - min_size) + min_size
-
-    # ----------------------------------------------------------
-    # Create figure
-
-    fig = go.Figure()
-
-    # Main bubble layer
-    fig.add_trace(go.Scatter(
-        x=bubble_df["Area_km2"], 
-        y=bubble_df["MedianResponseMinutes"],
-        mode="markers",
-        marker=dict(
-            size=size_scaled,
-            color=bubble_df["ComplianceRate"],
-            colorscale="RdYlGn",
-            reversescale=False,
-            line=dict(width=1.2, color="black"),
-            colorbar=dict(
-                title="Response within 6 min (%)"
-            ),
-            opacity=0.75
-        ),
-        hovertemplate=
-            "<b>%{text}</b><br><br>" +
-            "Median Response: %{y:.2f} min<br>" +
-            "Response within 6 min: %{marker.color:.1f}%<br>" +
-            "Incident Count: %{customdata[0]:,.0f}<br>" +
-            "Area: %{customdata[1]:.1f} km²" +
-            "<extra></extra>",
-        text=bubble_df["IncGeo_BoroughName"],
-        customdata=np.stack(
-        (
-            bubble_df["IncidentCount"],
-            bubble_df["Area_km2"]
-        ),
-        axis=-1
-    ),
-        showlegend=False
-    ))
-
-    # Regression line
-    fig.add_trace(go.Scatter(
-        x=x_range,
-        y=y_range,
-        mode="lines",
-        line=dict(color="black", width=2),
-        showlegend=False
-    ))
-
-    # ----------------------------------------------------------
-    # Layout styling
-
-    fig.update_layout(
-        height=700,
-        width=900,
-        xaxis_title="Borough Area (km²)",
-        yaxis_title="Median Response Time (minutes)",
-        template="simple_white",
-    )
-
-    fig.update_traces(marker=dict(opacity=0.75))
-
-    fig.update_xaxes(showgrid=False)
-    fig.update_yaxes(showgrid=False)
-
-    # Custom size legend (manual dummy traces)
-    fig.add_trace(go.Scatter(
-        x=[None], y=[None],
-        mode="markers",
-        marker=dict(size=3, color="grey", line=dict(color="black", width=1)),
-        name=low_label
-    ))
-
-    fig.add_trace(go.Scatter(
-        x=[None], y=[None],
-        mode="markers",
-        marker=dict(size=6, color="grey", line=dict(color="black", width=1)),
-        name=medium_label
-    ))
-
-    fig.add_trace(go.Scatter(
-        x=[None], y=[None],
-        mode="markers",
-        marker=dict(size=9, color="grey", line=dict(color="black", width=1)),
-        name=high_label
-    ))
-
-    fig.update_layout(
-        legend_title_text="     Bubble Size: Incident Volume",
-        legend=dict(
-            x=0.02,
-            y=0.98,
-            bgcolor="rgba(0,0,0,0)",
-            bordercolor="rgba(0,0,0,0)",
-        )
-    )
-
-
-    st.plotly_chart(fig)
-    
-    # ----------------------------------------------------------
-    # Dynamic Statistics 
-
-    # Correlation strength
-    strength = (
-        "very strong" if abs(r) >= 0.7 else
-        "strong" if abs(r) >= 0.5 else
-        "moderate" if abs(r) >= 0.3 else
-        "weak"
-    )
-
-    # Correlation direction
-    direction = "positive" if r > 0 else "negative"
-
-    # Significance
-    if p < 0.05:
-        significance = "statistically significant"
-    else:
-        significance = "not statistically significant"
-
-    # ----------------------------------------------------------
-    # Regression Summary Expander
-
-    with st.expander("Show Regression Summary (Statistical Details)"):
-
-        col1, col2 = st.columns(2)
-
-        with col1:
-            st.metric("Correlation (r)", f"{r:.2f}")
-            st.metric("R²", f"{r_squared:.2f}")
-            st.metric("p-value", format_p(p))
-
-        with col2:
-            st.metric("Statistically Significant", "Yes" if p < 0.05 else "No")
-            st.metric("Effect Strength", strength.capitalize())
-            st.metric("Effect Direction", direction.capitalize())
-
-    # ----------------------------------------------------------
-    # Dynamic Markdown
-
-    st.markdown(
-        f"""
-    - Within the 32 boroughs, a **{strength} {direction} relationship** (r = {r:.2f}, R² = {r_squared:.2f}) appears between borough size
-      and median response time.
-    - Larger boroughs tend to have longer median response times.
-    - The relationship is **{significance}** (p = {p:.7f}).
-
-    """
-    )
-
-
-
-
-
