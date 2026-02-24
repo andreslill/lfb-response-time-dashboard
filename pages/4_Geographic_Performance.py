@@ -750,7 +750,7 @@ elif metric_choice == "Median Response Time":
 - Median response times vary across boroughs, ranging from
   **{fastest_map_val:.2f} min ({fastest_map_borough})**
   to **{slowest_map_val:.2f} min ({slowest_map_borough})**
-  — a spread of **{rt_map_spread:.2f} minutes**.
+  ,a spread of **{rt_map_spread:.2f} minutes**.
 - Longer response times are clustered in larger outer boroughs,
   while central areas generally demonstrate faster attendance.
 - **{slowest_map_borough}** is {'an outer London borough' if slowest_is_outer else 'notable as a non-outer borough'},
@@ -773,7 +773,7 @@ elif metric_choice == "Response within 6 min (%)":
 - 6-minute compliance rates range from
   **{highest_comp_map_val:.1f}% ({highest_comp_map_borough})**
   to **{lowest_comp_map_val:.1f}% ({lowest_comp_map_borough})**
-  — a gap of **{comp_map_spread:.1f} percentage points** across boroughs.
+  ,a gap of **{comp_map_spread:.1f} percentage points** across boroughs.
 - Higher compliance rates cluster in central boroughs,
   while several outer boroughs show significantly lower target achievement.
 - The lowest-performing borough, **{lowest_comp_map_borough}**,
