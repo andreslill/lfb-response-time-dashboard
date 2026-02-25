@@ -379,7 +379,7 @@ Resources are better directed toward travel infrastructure and station distribut
 
 st.markdown("---")
 
-with st.expander("⚠️ Study Limitations"):
+with st.expander("Study Limitations"):
 
     st.markdown("""
     The following limitations should be considered when interpreting the findings of this analysis.
