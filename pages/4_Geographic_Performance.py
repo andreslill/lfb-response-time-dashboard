@@ -1361,6 +1361,7 @@ st.markdown(f"""
 """)
 
 
-# ---------------------------------------------------------------------
 st.markdown("---")
-# ---------------------------------------------------------------------
+st.caption(
+    "London Fire Brigade Incident & Response Time Analysis · Andrés Lill · February 2026"
+)
