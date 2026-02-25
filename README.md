@@ -100,10 +100,3 @@ streamlit run Introduction.py
 
 London Fire Brigade incident records (2021–2025), sourced from the [London Datastore](https://data.london.gov.uk). Analysis is based on first pump arrivals only, consistent with the LFB's official performance reporting methodology.
 
----
-
-## Author
-
-**Andrés Lill**  
-Data Analyst Trainee  
-February 2026
