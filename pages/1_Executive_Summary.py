@@ -224,9 +224,7 @@ mean_median_gap = round(mean - median, 2)
 st.markdown(f"""
 - Across {period_label} ({incident_label.lower()}), the 6-minute target is met in
   **{response_within_6min:.1f}%** of incidents, meaning **{above_target:.1f}%** exceed it.
-- The mean ({mean:.2f} min) is **{mean_median_gap:.2f} min above the median ({median:.2f} min)**,
-  confirming a right-skewed distribution where a minority of delayed incidents
-  pull the average upward.
+- The mean ({mean:.2f} min) is **{mean_median_gap:.2f} min above the median ({median:.2f} min)**.
 - Extreme delays above 10 minutes affect **{extreme_delay_rate:.1f}%** of incidents
   {", well within acceptable range." if extreme_delay_rate < 5 else ", exceeding the 5% warning threshold."}
 """)
