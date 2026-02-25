@@ -164,8 +164,8 @@ col1, col2, col3, col4, col5 = st.columns(5)
 
 col1.metric("Total Incidents", f"{total_incidents:,}")
 col2.metric("Median Response Time (min)", f"{median_response:.2f} min")
-col3.metric("Response within 6 min (%)", f"{response_within_6min:.1f}%")
-col4.metric("90th Percentile Response Time (min)", f"{p90_response:.2f} min")
+col3.metric("90th Percentile Response Time (min)", f"{p90_response:.2f} min")
+col4.metric("Response within 6 min (%)", f"{response_within_6min:.1f}%")
 col5.metric(">10 min Delays (%)", f"{extreme_delay_rate:.1f}%")
 
 st.markdown("---")
@@ -230,7 +230,3 @@ st.markdown(f"""
 - Extreme delays above 10 minutes affect **{extreme_delay_rate:.1f}%** of incidents
   {", well within acceptable range." if extreme_delay_rate < 5 else ", exceeding the 5% warning threshold."}
 """)
-
-
-
-
