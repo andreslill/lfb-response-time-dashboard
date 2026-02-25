@@ -2,17 +2,19 @@
 
 A multi-page interactive dashboard analysing operational performance data from the London Fire Brigade (LFB) between 2021 and 2025. The project explores response time patterns, evaluates compliance with official performance targets, and identifies structural performance drivers across all 33 London boroughs.
 
-🔗 **[Live Dashboard →](YOUR_STREAMLIT_URL_HERE)**
+🔗 **[Live Dashboard →](https://lfb-response-time-dashboard-cqk7jfyroyw9dfkfbcj9w5.streamlit.app/)**
 
 ---
 
 ## Project Overview
 
-The London Fire Brigade operates against two official performance benchmarks:
+The London Fire Brigade operates against two official performance benchmarks for the first appliance:
 - First pump arriving within **6 minutes**
 - 90% of first pumps arriving within **10 minutes**
 
-This analysis evaluates how consistently these targets are met — across time periods, incident types, and geographies — and identifies the structural factors that drive variation in response performance.
+A separate 8-minute target exists for the second appliance, which is dispatched in approximately 40% of incidents and is outside the scope of this analysis.
+
+This analysis evaluates how consistently the first appliance targets are met — across time periods, incident types, and geographies — and identifies the structural factors that drive variation in response performance.
 
 **Core finding:** Geography is the dominant driver of performance variation. Borough size alone explains 59% of the variation in median response time and 62% of the variation in 6-minute compliance. Travel time accounts for approximately 77% of total response time, while turnout time remains remarkably stable across all boroughs (IQR: just 4 seconds).
 
@@ -64,10 +66,9 @@ Data is stored in compressed **Parquet (Snappy)** format for performance optimis
 ```
 lfb-streamlit-app/
 │
-├── Introduction.py                  # Entry point
+├── Introduction.py         # Entry point
 ├── data_loader.py          # Cached data loading and preprocessing
 ├── pages/
-│   ├── 0_Introduction.py
 │   ├── 1_Executive_Summary.py
 │   ├── 2_Incident_Composition.py
 │   ├── 3_Response_Performance.py
@@ -88,7 +89,7 @@ lfb-streamlit-app/
 
 ```bash
 pip install -r requirements.txt
-streamlit run app.py
+streamlit run Introduction.py
 ```
 
 ---
@@ -104,4 +105,3 @@ London Fire Brigade incident records (2021–2025), sourced from the [London Dat
 **Andrés Lill**  
 Data Analyst / Analytics Engineering Trainee  
 February 2026
-
