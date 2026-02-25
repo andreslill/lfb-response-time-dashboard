@@ -649,20 +649,8 @@ with st.expander("Show detailed response time distribution (Boxplot)"):
       and most consistent performance.
     """)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+st.markdown("---")
+st.caption(
+    "London Fire Brigade Incident & Response Time Analysis · Andrés Lill · February 2026"
+)
 
