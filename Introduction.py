@@ -42,7 +42,7 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.markdown("""
-**Performance Against Targets**
+**Response Performance**
 The LFB operates against two official benchmarks:
 - First pump arriving within **6 minutes**
 - 90% of first pumps arriving within **10 minutes**
