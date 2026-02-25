@@ -123,10 +123,6 @@ filtered_incidents = (
     .drop_duplicates("IncidentNumber")
     .copy()
 )
-
-#st.write("Filtered DF rows:", len(filtered_df))
-#st.write("Unique IncidentNumber in filtered_df:", filtered_df["IncidentNumber"].nunique())
-#st.write("Filtered incidents rows:", len(filtered_incidents))
 # ---------------------------------------------------------------------
 # Total incidents
 
