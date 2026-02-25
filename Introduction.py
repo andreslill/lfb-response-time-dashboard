@@ -42,7 +42,7 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.markdown("""
-**Response Performance**
+**Response Performance -**
 The LFB operates against two official benchmarks:
 - First pump arriving within **6 minutes**
 - 90% of first pumps arriving within **10 minutes**
@@ -61,7 +61,7 @@ systematically exceed or fall short of the 6-minute target.
 
 with col2:
     st.markdown("""
-**What Drives Response Time**
+**What Drives Response Time -**
 Response time consists of two components:
 - **Turnout time:** from station alert to vehicle departure
 - **Travel time:** from departure to arrival on scene
