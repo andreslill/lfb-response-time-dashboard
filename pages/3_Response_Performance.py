@@ -87,16 +87,6 @@ if filtered_df.empty:
     st.warning("No data available for selected filters.")
     st.stop()
 
-if selected_year == "All":
-    year_text = "All Years"
-else:
-    year_text = selected_year
-
-if selected_month == "All":
-    month_text = "All Months"
-else:
-    month_text = selected_month
-
 # Dynamic Period Label
 
 min_year = df["Year"].min()
