@@ -132,6 +132,9 @@ filtered_incidents = (
 # ---------------------------------------------------------------------
 #KPIs
 
+st.markdown("---")
+
+
 median_response = filtered_incidents["FirstPumpArriving_AttendanceTime"].median() / 60
 response_within_6min = ((filtered_incidents["FirstPumpArriving_AttendanceTime"] <= 360).mean() * 100)
 p90_response = filtered_incidents["FirstPumpArriving_AttendanceTime"].quantile(0.90) / 60
@@ -146,8 +149,6 @@ col2.metric("Response within 6 min (%)", f"{response_within_6min:.1f}%")
 col3.metric("90th Percentile Response Time (min)", f"{p90_response:.2f} min")
 col4.metric(">10 min Delays (%)", f"{extreme_delay_rate:.1f}%")
 
-st.markdown("---")
-# ---------------------------------------------------------------------
 
 # ---------------------------------------------------------------------
 # Calculate 6-minute compliance rate
@@ -300,12 +301,6 @@ st.markdown(f"""
   broader range of operational scenarios and access conditions associated with these incidents.
 - Delays above 10 minutes remain limited overall, peaking in **{highest_extreme}** ({extreme_10[highest_extreme]:.1f}%).
 """)
-
-
-
-
-
-
 
 
 
