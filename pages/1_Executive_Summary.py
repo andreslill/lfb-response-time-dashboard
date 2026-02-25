@@ -218,3 +218,8 @@ st.markdown(f"""
 - Extreme delays above 10 minutes affect **{extreme_delay_rate:.1f}%** of incidents
   {", well within acceptable range." if extreme_delay_rate < 5 else ", exceeding the 5% warning threshold."}
 """)
+
+st.markdown("---")
+st.caption(
+    "London Fire Brigade Incident & Response Time Analysis · Andrés Lill · February 2026"
+)
