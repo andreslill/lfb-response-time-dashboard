@@ -43,7 +43,7 @@ col1, col2 = st.columns(2)
 with col1:
     st.markdown("""
 **Response Performance -**
-The LFB operates against two official benchmarks:
+The London Fire Brigade operates against two primary performance benchmarks for the first appliance:
 - First pump arriving within **6 minutes**
 - 90% of first pumps arriving within **10 minutes**
 
