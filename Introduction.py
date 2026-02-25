@@ -9,7 +9,7 @@ st.set_page_config(
 # ---------------------------------------------------------------------
 # Title
 
-st.title("London Fire Brigade Incident & Response Time Analysis Dashboard")
+st.title("London Fire Brigade Response Time & Operational Performance Analysis (2021-2025)")
 
 st.markdown("---")
 
@@ -150,5 +150,5 @@ st.markdown("---")
 
 st.markdown("---")
 st.caption(
-    "London Fire Brigade Incident & Response Time Analysis · Andrés Lill · February 2026"
+    "London Fire Brigade Response Time & Operational Performance Analysis (2021-2025) · Andrés Lill · February 2026"
 )
