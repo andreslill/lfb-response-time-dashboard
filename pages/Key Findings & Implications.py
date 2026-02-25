@@ -456,9 +456,35 @@ with st.expander("Study Limitations"):
     period should be interpreted with this context in mind, particularly for year-on-year comparisons.
     """)
 
+with st.expander("Further Outlook"):
+    st.markdown("""
 
+    **Station-Level Geographic Analysis**
+    The current analysis aggregates performance at the borough level, which conceals variation
+    within boroughs. A station-level breakdown would allow for the identification of specific
+    coverage gaps and pinpoint exactly where additional resources would have the greatest impact.
 
+    **Multivariate Regression**
+    The individual contributions of traffic density, road network structure, and station placement
+    could not be isolated in the current analysis. A multivariate model would allow us to test for
+    the relative importance of each factor.
 
+    **Traffic Data Integration**
+    Merging traffic data against response time records would allow for a direct measurement
+    of how congestion affects travel time across different boroughs and hours of the day,
+    rather than inferring it from recorded delay codes alone.
+
+    **Extended Time Frame**
+    Including records prior to 2021 and continuing to update the dataset
+    beyond 2025 would strengthen the robustness of any trend analysis and allow for a
+    more reliable long-term assessment of LFB performance
+
+    **Time Series Analysis**
+    With an extended dataset, a formal time series analysis could then test whether
+    performance is improving or deteriorating over time, and whether specific boroughs
+    show systematic trends that warrant operational attention.
+    """)
+    
 st.markdown("---")
 st.caption(
     "London Fire Brigade Incident & Response Time Analysis · February 2026"
