@@ -487,5 +487,5 @@ with st.expander("Further Outlook"):
     
 st.markdown("---")
 st.caption(
-    "London Fire Brigade Incident & Response Time Analysis · February 2026"
+    "London Fire Brigade Incident & Response Time Analysis · Andrés Lill · February 2026"
 )
