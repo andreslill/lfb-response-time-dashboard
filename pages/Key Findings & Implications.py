@@ -189,6 +189,7 @@ if delay_col and not exceedances.empty:
 
 # =====================================================================
 
+
 st.markdown("---")
 
 
@@ -227,8 +228,10 @@ st.markdown("---")
 
 #  2: only shown when no incident type filter is active 
 if selected_incident == "All":
+
     st.header("2. Incident Composition: Mostly Non-Fire")
     fire_ratio = round(100 / pct_fire) if pct_fire > 0 else "many"
+
     st.markdown(f"""
 The LFB's workload is dominated by non-fire incidents (based on the full 2021–2025 dataset):
 
@@ -245,7 +248,9 @@ simpler deployments compared to fires or special services.
 
 # 3: only shown when no incident type filter is active 
 if selected_incident == "All":
+
     st.header("3. Response Performance Differs Across Incident Types")
+
     st.markdown(f"""
 Not all incident types are attended equally fast (based on the full 2021–2025 dataset):
 
@@ -265,6 +270,7 @@ can produce misleading conclusions.
 
 # 4:
 if borough_available:
+
     st.header("4. Geography is the Primary Performance Driver")
 
     io_text = ""
@@ -293,7 +299,9 @@ response times. Station placement and coverage area matter more than demand volu
 
 # 5: 
 if not pd.isna(median_turnout) and not pd.isna(median_travel):
-    st.header("5. Travel Time, Not Turnout, Drives Performance")
+
+    st.header("5. Travel Time Drives Performance")
+
     st.markdown(f"""
 Decomposing response time into its two components reveals a decisive finding:
 
@@ -354,9 +362,9 @@ compliance. Optimising the **geographic placement of fire stations and coverage 
 is more likely to improve performance than further refinements to already efficient
 mobilisation processes.
 
-**Aggregate KPIs are misleading without borough context.**
-A city-wide median of {median_response:.2f} minutes can obscure the fact that some boroughs
-fail to meet the 6-minute target in a significant share of incidents.
+**Overall performance metrics are misleading without borough context.**
+A city-wide median of {median_response:.2f} minutes can obscure the fact
+that in boroughs like Hillingdon, nearly half of all incidents exceed the 6-minute target.
 Borough-level reporting is essential for an accurate picture of operational performance.
 
 **The 6-minute target is structurally harder to meet in outer London.**
@@ -370,7 +378,88 @@ Resources are better directed toward travel infrastructure and station distribut
 """)
 
 st.markdown("---")
+
+with st.expander("⚠️ Study Limitations"):
+
+    st.markdown("""
+    The following limitations should be considered when interpreting the findings of this analysis.
+    """)
+
+    # Limitations
+
+
+    st.subheader("1. Correlation, Not Causation")
+    st.markdown("""
+    All relationships reported are **correlational, not causal**. While the association between
+    borough size and compliance (r = −0.79) is strong, the analysis does not isolate the individual
+    effects of traffic density, road network structure, crew availability, or station placement.
+    Borough size may partly act as a **proxy for these unmeasured variables**, and results should
+    be interpreted accordingly.
+    """)
+
+    st.subheader("2. Geographic Granularity")
+    st.markdown("""
+    All spatial analysis is conducted at the **borough level** (32 London boroughs + City of London).
+    While sufficient to identify structural gaps between Inner and Outer London, this granularity
+    **conceals variation within boroughs**. Station-level or postcode-level analysis would provide
+    a more precise picture of localised response constraints, but was excluded to ensure consistency
+    with the GIS boundary dataset used for choropleth mapping.
+    """)
+
+    st.subheader("3. Static Borough Classifications")
+    st.markdown("""
+    The Inner/Outer London classification used in this analysis is based on the **fixed ONS
+    boundary definition** and does not reflect changes in urban density, demographic composition,
+    or station coverage that may have occurred during the study period. Some boroughs on the
+    Inner/Outer boundary may not fit neatly into either category operationally.
+    """)
+
+    st.subheader("4. Missing Value Imputation")
+    st.markdown("""
+    **Median imputation** was applied to TurnoutTimeSeconds and TravelTimeSeconds where missing
+    values were present. While the median is a robust choice for right-skewed distributions,
+    the geographic distribution of missing values was not formally assessed. If missingness is
+    concentrated in specific boroughs, imputation may have introduced **localised bias** into
+    borough comparisons.
+    """)
+
+    st.subheader("5. First Pump Only")
+    st.markdown("""
+    All response time analysis is based on the **first pump arrival only**. Second and third pump
+    arrivals, which are relevant for larger or more complex incidents, are excluded. This means
+    the analysis does not capture the full picture of multi-resource deployments, and may
+    underrepresent the operational burden of major incidents in outer boroughs.
+    """)
+
+    st.subheader("6. Scope of Delay Code Analysis")
+    st.markdown("""
+    Delay codes are only recorded for incidents that **exceed the 6-minute target** and where a
+    specific cause is identified. The high proportion of *"Not held up"* codes (61.6%) limits the
+    explanatory power of this variable. It is unclear whether these cases represent genuine
+    structural delays with no identifiable cause, or reflect **inconsistencies in how delay codes
+    are recorded** across stations and boroughs.
+    """)
+
+    st.subheader("7. Single-Service Scope")
+    st.markdown("""
+    This analysis focuses exclusively on the **London Fire Brigade** and does not account for
+    interactions with other emergency services (ambulance, police) or coordinated multi-agency
+    responses. In incidents requiring multi-agency attendance, LFB response times may be
+    influenced by factors outside its operational control.
+    """)
+
+    st.subheader("8. Time Frame and COVID-19 Effect")
+    st.markdown("""
+    The dataset covers **2021–2025**, meaning the earliest year (2021) falls within the end
+    of the COVID-19 pandemic. Incident volumes, traffic patterns, and operational deployments in
+    2021 may not be representative of normal operating conditions. Trends observed across the full
+    period should be interpreted with this context in mind, particularly for year-on-year comparisons.
+    """)
+
+
+
+
+st.markdown("---")
 st.caption(
     "London Fire Brigade Incident & Response Time Analysis · February 2026"
 )
-
