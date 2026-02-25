@@ -89,9 +89,9 @@ st.markdown("""
 This analysis is based on two publicly available datasets from the London Fire Brigade,
 accessed via the London Datastore:
 
-- **LFB Incident Records** — date, location, incident type, and property category
+- **LFB Incident Records:** date, location, incident type, and property category
   for each incident responded to between 2021 and 2025.
-- **LFB Mobilisation Records** — pump-level response data including turnout time,
+- **LFB Mobilisation Records:** pump-level response data including turnout time,
   travel time, and attendance time for each appliance deployed.
 
 Both datasets are publicly available at:
