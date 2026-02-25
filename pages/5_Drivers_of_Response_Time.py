@@ -856,3 +856,11 @@ st.markdown(f"""
 - **{not_held_up_percent:.1f}%** of 6-minute exceedances have no recorded delay reason,
   suggesting structural rather than operational causes.
 """)
+
+
+
+
+st.markdown("---")
+st.caption(
+    "London Fire Brigade Incident & Response Time Analysis · Andrés Lill · February 2026"
+)
