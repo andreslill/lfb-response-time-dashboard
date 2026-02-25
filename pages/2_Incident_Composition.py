@@ -608,5 +608,10 @@ st.markdown(f"""
   if weekend_diff_pct > 0 else "reduced commercial and occupational activity at weekends"}.
 """)
 
+st.markdown("---")
+st.caption(
+    "London Fire Brigade Incident & Response Time Analysis · Andrés Lill · February 2026"
+)
+
 
 
