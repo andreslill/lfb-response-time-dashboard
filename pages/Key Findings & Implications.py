@@ -457,29 +457,41 @@ with st.expander("Study Limitations"):
     """)
 
 with st.expander("Further Outlook"):
-    st.markdown("""
 
-    **Station-Level Geographic Analysis**
+    st.markdown("""
+    The following extensions would strengthen and deepen this analysis given additional time and resources.
+    """)
+
+    st.subheader("1. Station-Level Geographic Analysis")
+    st.markdown("""
     The current analysis aggregates performance at the borough level, which conceals variation
     within boroughs. A station-level breakdown would allow for the identification of specific
     coverage gaps and pinpoint exactly where additional resources would have the greatest impact.
+    """)
 
-    **Multivariate Regression**
+    st.subheader("2. Multivariate Regression")
+    st.markdown("""
     The individual contributions of traffic density, road network structure, and station placement
     could not be isolated in the current analysis. A multivariate model would allow us to test for
     the relative importance of each factor.
+    """)
 
-    **Traffic Data Integration**
+    st.subheader("3. Traffic Data Integration")
+    st.markdown("""
     Merging traffic data against response time records would allow for a direct measurement
     of how congestion affects travel time across different boroughs and hours of the day,
     rather than inferring it from recorded delay codes alone.
+    """)
 
-    **Extended Time Frame**
-    Including records prior to 2021 and continuing to update the dataset
-    beyond 2025 would strengthen the robustness of any trend analysis and allow for a
-    more reliable long-term assessment of LFB performance
+    st.subheader("4. Extended Time Frame")
+    st.markdown("""
+    Including records prior to 2021 and continuing to update the dataset beyond 2025 would
+    strengthen the robustness of any trend analysis and allow for a more reliable long-term
+    assessment of LFB performance.
+    """)
 
-    **Time Series Analysis**
+    st.subheader("5. Time Series Analysis")
+    st.markdown("""
     With an extended dataset, a formal time series analysis could then test whether
     performance is improving or deteriorating over time, and whether specific boroughs
     show systematic trends that warrant operational attention.
