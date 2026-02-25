@@ -12,7 +12,7 @@ st.set_page_config(
 # ---------------------------------------------------------------------
 # Title
 
-st.title("🚒 London Fire Brigade Incident & Response Time Analysis Dashboard")
+st.title("London Fire Brigade Incident & Response Time Analysis Dashboard")
 
 st.markdown("---")
 
@@ -42,7 +42,7 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.markdown("""
-**🎯 Performance Against Targets**
+**Performance Against Targets**
 The LFB operates against two official benchmarks:
 - First pump arriving within **6 minutes**
 - 90% of first pumps arriving within **10 minutes**
@@ -52,7 +52,7 @@ across different time periods, incident types, and boroughs.
 """)
 
     st.markdown("""
-**🗺️ Geographic Variation**
+**Geographic Variation**
 Response performance is not uniform across London.
 This dashboard maps performance differences across all 33 boroughs,
 comparing Inner and Outer London and identifying which areas
@@ -61,7 +61,7 @@ systematically exceed or fall short of the 6-minute target.
 
 with col2:
     st.markdown("""
-**⏱️ What Drives Response Time**
+**What Drives Response Time**
 Response time consists of two components:
 - **Turnout time** — from station alert to vehicle departure
 - **Travel time** — from departure to arrival on scene
@@ -71,7 +71,7 @@ identifying where improvements can be made.
 """)
 
     st.markdown("""
-**📅 Temporal Patterns**
+**Temporal Patterns**
 Incident demand and response performance are not constant.
 This dashboard explores how volumes and response times vary
 by month, day of week, and hour of call — revealing
