@@ -161,6 +161,8 @@ filtered_incidents["Over6"] = filtered_incidents["FirstPumpArriving_AttendanceTi
 # ------------------------------------------------------------
 # KPIs
 
+st.markdown("---")
+
 overall_turnout = filtered_incidents["TurnoutMinutes"].median()
 overall_travel = filtered_incidents["TravelMinutes"].median()
 
@@ -867,34 +869,3 @@ st.markdown(f"""
 - **{not_held_up_percent:.1f}%** of 6-minute exceedances have no recorded delay reason,
   suggesting structural rather than operational causes.
 """)
-
-
-
-
-# Current calculation (sum of medians)
-#overall_turnout = filtered_incidents["TurnoutMinutes"].median()
-#overall_travel = filtered_incidents["TravelMinutes"].median()
-#total_component = overall_turnout + overall_travel
-#travel_share_pct_current = (overall_travel / total_component) * 100
-
-# Alternative calculation (median of sum)
-#total_attendance = filtered_incidents["TravelMinutes"].add(
-#    filtered_incidents["TurnoutMinutes"]
-#).median()
-#travel_share_pct_alternative = (overall_travel / total_attendance) * 100
-
-# Display
-#col1, col2, col3, col4 = st.columns(4)
-#col1.metric("Median Turnout", f"{overall_turnout:.2f} min")
-#col2.metric("Median Travel", f"{overall_travel:.2f} min")
-#col3.metric("Travel Share (sum of medians)", f"{travel_share_pct_current:.1f}%")
-#col4.metric("Travel Share (median of sum)", f"{travel_share_pct_alternative:.1f}%")
-
-#st.write(f"**Sum of medians:** {total_component:.3f} min")
-#st.write(f"**Median of sum:** {total_attendance:.3f} min")
-#st.write(f"**Difference:** {abs(total_component - total_attendance):.3f} min")
-
-
-#st.write(f"**Median turnout:** {overall_turnout:.3f} min")
-#st.write(f"**Median travel:**  {overall_travel:.3f} min")
-
