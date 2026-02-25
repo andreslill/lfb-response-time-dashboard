@@ -105,5 +105,5 @@ London Fire Brigade incident records (2021–2025), sourced from the [London Dat
 ## Author
 
 **Andrés Lill**  
-Data Analyst / Analytics Engineering Trainee  
+Data Analyst Trainee  
 February 2026
