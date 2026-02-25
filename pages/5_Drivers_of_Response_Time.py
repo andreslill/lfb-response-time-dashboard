@@ -135,9 +135,6 @@ filtered_incidents = (
     .copy()
 )
 
-#st.write("Filtered DF rows:", len(filtered_df))
-#st.write("Unique IncidentNumber in filtered_df:", filtered_df["IncidentNumber"].nunique())
-#st.write("Filtered incidents rows:", len(filtered_incidents))
 # ---------------------------------------------------------------------
 # Feature engineering for this page
 
