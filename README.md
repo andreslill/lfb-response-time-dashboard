@@ -12,7 +12,7 @@ The London Fire Brigade operates against two official performance benchmarks for
 - First pump arriving within **6 minutes**
 - 90% of first pumps arriving within **10 minutes**
 
-A separate 8-minute target exists for the second appliance, which is dispatched in approximately 40% of incidents and is outside the scope of this analysis.
+A separate 8-minute target exists for the second appliance. However, with the second pump deployed in only 36% of incidents, reflected in a 64% missing value rate for SecondPumpArriving_AttendanceTime,  it does not provide a consistent basis for cross-incident comparison and was therefore excluded from this analysis.
 
 This analysis evaluates how consistently the first appliance targets are met — across time periods, incident types, and geographies — and identifies the structural factors that drive variation in response performance.
 
