@@ -63,8 +63,8 @@ with col2:
     st.markdown("""
 **What Drives Response Time**
 Response time consists of two components:
-- **Turnout time**: from station alert to vehicle departure
-- **Travel time**: from departure to arrival on scene
+- **Turnout time:** from station alert to vehicle departure
+- **Travel time:** from departure to arrival on scene
 
 Understanding which component drives variation is key to
 identifying where improvements can be made.
