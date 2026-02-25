@@ -66,8 +66,8 @@ Data is stored in compressed **Parquet (Snappy)** format for performance optimis
 ```
 lfb-streamlit-app/
 │
-├── Introduction.py         # Entry point
-├── data_loader.py          # Cached data loading and preprocessing
+├── Introduction.py                       # Entry point
+├── data_loader.py                        # Cached data loading and preprocessing
 ├── pages/
 │   ├── 1_Executive_Summary.py
 │   ├── 2_Incident_Composition.py
@@ -76,9 +76,11 @@ lfb-streamlit-app/
 │   ├── 5_Drivers_of_Response_Time.py
 │   └── 6_Key_Findings_&_Implications.py
 ├── data/
-│   └── lfb_streamlit.parquet
+│   ├── lfb_streamlit.parquet
+│   ├── london_boroughs/                  # GeoJSON boundary files
+│   └── london_population_borough.csv
 ├── .streamlit/
-│   └── config.toml         # Theme configuration
+│   └── config.toml                       # Theme configuration
 ├── requirements.txt
 └── README.md
 ```
