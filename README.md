@@ -104,3 +104,11 @@ London Fire Brigade incident records (2021–2025), sourced from the [London Dat
 
 The full data preprocessing and exploratory analysis pipeline is documented in [`analysis/London_Fire_Brigade_Analysis.ipynb`](analysis/London_Fire_Brigade_Analysis.ipynb).
 
+## Analysis Notebook
+
+The [`analysis/`](analysis/) folder contains the full EDA and preprocessing pipeline, including:
+- Data loading and inspection
+- Missing value handling and imputation strategy
+- Feature engineering
+- Exploratory visualisations
+- Export to Parquet for the Streamlit dashboard
