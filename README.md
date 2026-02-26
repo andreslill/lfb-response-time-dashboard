@@ -108,7 +108,6 @@ This analysis is based on two publicly available datasets from the London Fire B
 Geographic boundary data (GIS borough boundaries) was sourced from the [London Datastore Statistical GIS Boundary Files](https://data.london.gov.uk/dataset/statistical-gis-boundary-files-for-london-20od9/).
 
 The full data preprocessing and exploratory analysis pipeline is documented in [`analysis/London_Fire_Brigade_Analysis.ipynb`](analysis/London_Fire_Brigade_Analysis.ipynb).
-👍 Sonnet 4.6Claude ist eine KI und kann Fehler machen. Bitte überprüfe die Antworten.
 
 ## Analysis Notebook
 
