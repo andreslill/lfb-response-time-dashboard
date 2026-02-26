@@ -100,9 +100,15 @@ streamlit run Introduction.py
 
 ## Data Source
 
-London Fire Brigade incident records (2021–2025), sourced from the [London Datastore](https://data.london.gov.uk). Analysis is based on first pump arrivals only, consistent with the LFB's official performance reporting methodology.
+This analysis is based on two publicly available datasets from the London Fire Brigade, accessed via the London Datastore:
+
+- **LFB Incident Records** — [data.london.gov.uk](https://data.london.gov.uk/dataset/london-fire-brigade-incident-records)
+- **LFB Mobilisation Records** — [data.london.gov.uk](https://data.london.gov.uk/dataset/london-fire-brigade-mobilisation-records)
+
+Geographic boundary data (GIS borough boundaries) was sourced from the [London Datastore Statistical GIS Boundary Files](https://data.london.gov.uk/dataset/statistical-gis-boundary-files-for-london-20od9/).
 
 The full data preprocessing and exploratory analysis pipeline is documented in [`analysis/London_Fire_Brigade_Analysis.ipynb`](analysis/London_Fire_Brigade_Analysis.ipynb).
+👍 Sonnet 4.6Claude ist eine KI und kann Fehler machen. Bitte überprüfe die Antworten.
 
 ## Analysis Notebook
 
