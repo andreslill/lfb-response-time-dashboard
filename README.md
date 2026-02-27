@@ -14,7 +14,7 @@ The London Fire Brigade operates against two official performance benchmarks for
 
 A separate 8-minute target exists for the second appliance. However, with the second pump deployed in only 36% of incidents, reflected in a 64% missing value rate for SecondPumpArriving_AttendanceTime,  it does not provide a consistent basis for cross-incident comparison and was therefore excluded from this analysis.
 
-This analysis evaluates how consistently the first appliance targets are met — across time periods, incident types, and geographies — and identifies the structural factors that drive variation in response performance.
+Consistency in meeting first appliance targets is examined across time periods, incident types, and geographies, alongside the structural factors driving variation in response performance.​​​​​​​​​​​​​​​​
 
 **Core finding:** Geography is the dominant driver of performance variation. Borough size alone explains 59% of the variation in median response time and 62% of the variation in 6-minute compliance. Travel time accounts for approximately 77% of total response time, while turnout time remains remarkably stable across all boroughs (IQR: just 4 seconds).
 
@@ -100,7 +100,7 @@ streamlit run Introduction.py
 
 ## Data Source
 
-This analysis is based on two publicly available datasets from the London Fire Brigade, accessed via the London Datastore:
+Two publicly available datasets from the London Fire Brigade, accessed via the London Datastore were used.
 
 - **LFB Incident Records** — [data.london.gov.uk](https://data.london.gov.uk/dataset/london-fire-brigade-incident-records)
 - **LFB Mobilisation Records** — [data.london.gov.uk](https://data.london.gov.uk/dataset/london-fire-brigade-mobilisation-records)
