@@ -50,7 +50,7 @@ Compliance with these targets is evaluated across different time periods, incide
     st.markdown("""
 **Geographic Variation:**
 Response performance is not uniform across London.
-Performance differences are mapped across all 33 boroughs,
+Performance differences are mapped across all boroughs,
 comparing Inner and Outer London and identifying areas that
 systematically exceed or fail to meet the 6-minute target.
 """)
