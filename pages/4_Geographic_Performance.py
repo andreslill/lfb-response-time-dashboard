@@ -702,9 +702,10 @@ if metric_choice == "Incident Volume":
 - **{lowest_volume_borough}** records the lowest incident volume
   ({lowest_volume_val:,} incidents).
 
-Despite this central concentration of incidents, slower response performance
-is not primarily observed in high-volume boroughs. This suggests that the
-number of incidents alone does not explain geographic differences in response times.
+Despite this concentration of incidents in **{highest_volume_borough}**, 
+slower response performance is not primarily observed in high-volume boroughs. 
+This suggests that incident volume alone does not explain geographic differences 
+in response times.
 """)
 
 elif metric_choice == "Median Response Time":
