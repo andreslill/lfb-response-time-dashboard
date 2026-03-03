@@ -83,8 +83,7 @@ st.markdown("---")
 st.subheader("Data Sources")
 
 st.markdown("""
-This analysis is based on two publicly available datasets from the London Fire Brigade,
-accessed via the London Datastore:
+Two publicly available datasets from the London Fire Brigade were used, accessed via the London Datastore:
 
 - **LFB Incident Records:** date, location, incident type, and property category
   for each incident responded to between 2021 and 2025.
