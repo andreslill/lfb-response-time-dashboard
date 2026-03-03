@@ -698,8 +698,7 @@ if metric_choice == "Incident Volume":
 **Map Insight**
 
 - Incident demand is most concentrated in **{highest_volume_borough}**
-  ({highest_volume_val:,} incidents), reflecting high population density,
-  commercial activity, and tourism in central London.
+  ({highest_volume_val:,} incidents).
 - **{lowest_volume_borough}** records the lowest incident volume
   ({lowest_volume_val:,} incidents).
 
