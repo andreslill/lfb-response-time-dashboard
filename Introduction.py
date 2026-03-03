@@ -24,8 +24,8 @@ flooding, and a wide range of special services.
 
 This dashboard analyses **incident and mobilisation records from 2021 to 2025**, covering
 approximately **586,000 incidents** across all 32 London boroughs and the City of London.
-The goal is to evaluate operational response performance and explain why response times vary across London.
-and understand what drives variation in response times across the city.
+The goal is to evaluate operational response performance and explain why response times 
+vary across London.
 """)
 
 st.markdown("---")
