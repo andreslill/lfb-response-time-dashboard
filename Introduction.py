@@ -44,16 +44,15 @@ The London Fire Brigade operates against two primary performance benchmarks for 
 - First pump arriving within **6 minutes**
 - 90% of first pumps arriving within **10 minutes**
 
-This dashboard evaluates how consistently these targets are met
-across different time periods, incident types, and boroughs.
+Compliance with these targets is evaluated across different time periods, incident types, and boroughs.
 """)
 
     st.markdown("""
 **Geographic Variation**
 Response performance is not uniform across London.
-This dashboard maps performance differences across all 33 boroughs,
-comparing Inner and Outer London and identifying which areas
-systematically exceed or fall short of the 6-minute target.
+Performance differences are mapped across all 33 boroughs,
+comparing Inner and Outer London and identifying areas that
+systematically exceed or fail to meet the 6-minute target.
 """)
 
 with col2:
