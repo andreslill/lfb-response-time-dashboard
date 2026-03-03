@@ -1,6 +1,7 @@
 # London Fire Brigade — Incident & Response Time Analysis (2021–2025)
 
-A multi-page interactive dashboard analysing operational performance data from the London Fire Brigade (LFB) between 2021 and 2025. The project explores response time patterns, evaluates compliance with official performance targets, and identifies structural performance drivers across all 33 London boroughs.
+A multi-page interactive dashboard analysing operational performance data from the London Fire Brigade (LFB) between 2021 and 2025. 
+Response performance is assessed across London to understand the drivers of variation in response times.
 
 🔗 **[Live Dashboard →](https://lfb-response-time-dashboard-cqk7jfyroyw9dfkfbcj9w5.streamlit.app/)**
 
