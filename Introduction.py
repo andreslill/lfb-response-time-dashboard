@@ -48,7 +48,7 @@ Compliance with these targets is evaluated across different time periods, incide
 """)
 
     st.markdown("""
-**Geographic Variation**
+**Geographic Variation: **
 Response performance is not uniform across London.
 Performance differences are mapped across all 33 boroughs,
 comparing Inner and Outer London and identifying areas that
@@ -67,7 +67,7 @@ identifying where improvements can be made.
 """)
 
     st.markdown("""
-**Temporal Patterns**
+**Temporal Patterns: **
 Incident demand and response performance are not constant.
 This dashboard explores how volumes and response times vary
 by month, day of week, and hour of call — revealing
