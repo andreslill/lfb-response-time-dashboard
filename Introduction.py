@@ -22,8 +22,8 @@ and one of the largest firefighting organisations in the world. Responsible for 
 9 million people across 1,572 km², the LFB responds to fires, road traffic collisions,
 flooding, and a wide range of special services.
 
-This dashboard analyses **incident and mobilisation records from 2021 to 2025**, covering
-approximately **586,000 incidents** across all 32 London boroughs and the City of London.
+**Incident and mobilisation records from 2021 to 2025** are examined, covering approximately
+**586,000 incidents** across all 32 London boroughs and the City of London.
 The goal is to evaluate operational response performance and explain why response times 
 vary across London.
 """)
