@@ -142,7 +142,7 @@ compliance_rate = (filtered_incidents["FirstPump_Within_6min"].mean() * 100)
 # ---------------------------------------------------------------------
 # Stacked Barplot
 
-st.subheader("Distribution of Response Times")
+st.subheader("Response Time Bands by Incident Type")
 
 st.markdown(
     f"<div style='margin-top:-10px; margin-bottom:8px; color:#6b7280; font-size:0.85rem;'>"
