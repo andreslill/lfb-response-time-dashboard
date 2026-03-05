@@ -38,7 +38,6 @@ Adherence to first appliance targets is examined across time periods, incident t
 ![Response Time Distribution](docs/response_time_distribution.png)
 
 **Fig. 2.**  *Distribution of first-pump response times across incidents. Vertical lines indicate the median, mean, 90th percentile, and the official 6-minute response target.*
----
 
 ## Dashboard Pages
 
