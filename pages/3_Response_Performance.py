@@ -155,7 +155,7 @@ st.markdown("<br>", unsafe_allow_html=True) # space
 
 # Legend
 
-spacer_left, col1, col2, col3, col4, right = st.columns([0.8, 1, 1, 1, 1, 1.5])
+spacer_left, col1, col2, col3, col4, right = st.columns([0.9, 1, 1, 1, 1, 1.5])
 
 col1.markdown("<span style='color:#2ca02c;'>●</span> ≤ 6 min", unsafe_allow_html=True)
 col2.markdown("<span style='color:#f1ce63;'>●</span> 6–8 min", unsafe_allow_html=True)
