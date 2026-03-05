@@ -48,10 +48,9 @@ st.markdown(
     ">
         <strong style="font-size: 1.05rem;">Core Finding</strong><br>
         <span style="font-size: 0.97rem; color: #1f2937;">
-        The LFB met the 6-minute target in <strong>69.5%</strong> of incidents between 2021–2025.
-        <strong>Geography is the primary driver of variation</strong>. Borough area explains 59% of
-        response time differences. Travel time accounts for ~77% of total response time,
-        while turnout remains remarkably stable (IQR: just 4 seconds) across all stations.
+        <strong>Geography is the main driver of variation across London</strong>. 
+        Borough area explains 59% of differences, with travel time accounting for 
+        ~77% of total response time, while turnout is largely stable across stations.
         </span>
     </div>
     """,
