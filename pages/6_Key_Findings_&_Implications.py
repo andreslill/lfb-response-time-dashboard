@@ -325,10 +325,8 @@ target in the selected period:
 """)
     if delay_available:
         st.markdown(f"""
-**{pct_not_held_up:.1f}%** of exceedances were recorded as *"Not held up"* — no specific delay logged.
-The remaining cases involve traffic, roadworks, traffic calming, or address issues.
-
-This indicates that the majority of exceedances occur under normal operating conditions
+**{pct_not_held_up:.1f}%** of exceedances were recorded as *"Not held up"*, meaning no specific delay was logged.
+The remaining cases involve traffic, roadworks, traffic calming, or address issues. This indicates that the majority of exceedances occur under normal operating conditions
 rather than exceptional operational disruptions.
 """)
     else:
