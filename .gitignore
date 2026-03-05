@@ -1,3 +1,21 @@
+# Secrets
+.streamlit/secrets.toml
+
+# Python caches
 __pycache__/
-*.pyc
+*.py[cod]
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# OS / Editors
 .DS_Store
+.vscode/
+.idea/
+
+# Data (keep local, not in repo)
+Data/raw/
+Data/raw/**
+Data/processed/
+Data/processed/**
