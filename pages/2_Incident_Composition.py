@@ -206,11 +206,11 @@ special_service_share = incident_share.get("Special Service", 0)
 fire_share = incident_share.get("Fire", 0)
 
 st.markdown(f"""
-- Nearly **{100 - fire_share}%** of deployments are non-fire related.
-- False Alarms dominate the workload and shape overall demand patterns.
-- The imbalance between fire and non-fire incidents highlights
-  the importance of understanding workload composition when evaluating
-  response performance.
+Nearly **{100 - fire_share}%** of deployments are non-fire related.
+False Alarms dominate the workload and shape overall demand patterns.
+The imbalance between fire and non-fire incidents highlights
+the importance of understanding workload composition when evaluating
+response performance.
 """)
 
 
@@ -268,9 +268,9 @@ with st.expander("Show Special Service Type Breakdown"):
     top3_pct = special_df.head(3)["Percent"].sum()
 
     st.markdown(f"""
-- **{top_type}** is the most common Special Service type,
-  accounting for **{top_pct:.1f}%** of all Special Service incidents.
-- The top 3 categories together represent **{top3_pct:.1f}%** of Special Service demand.
+**{top_type}** is the most common Special Service type,
+accounting for **{top_pct:.1f}%** of all Special Service incidents.
+The top 3 categories together represent **{top3_pct:.1f}%** of Special Service demand.
     """)
     
 # ---------------------------------------------------------------------
@@ -491,7 +491,7 @@ special_peak_value = int(monthly_special.max())
 
 
 st.markdown(f"""
-- Overall incident demand peaks in **{peak_month}** and reaches its lowest level in **{low_month}**,
+Overall incident demand peaks in **{peak_month}** and reaches its lowest level in **{low_month}**,
   representing a seasonal variation of approximately **{seasonal_range_pct}%**.
 - **False Alarms** follow a similar demand curve, peaking in **{false_peak_month}**.
 - **Special Services** display slight seasonal variation, with a peak in **{special_peak_month}**.

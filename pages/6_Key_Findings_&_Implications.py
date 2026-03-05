@@ -236,11 +236,9 @@ if selected_incident == "All":
 
     st.markdown(f"""
 The LFB's workload is dominated by non-fire incidents (based on the full 2021–2025 dataset):
-
-- **False Alarms: {pct_false_alarm:.1f}%** of all incidents: the single largest category.
-- **Special Service: {pct_special_service:.1f}%**
-- **Fire: {pct_fire:.1f}%**: less than 1 in {fire_ratio} deployments involves a fire.
-- Nearly **{pct_non_fire:.1f}% of all deployments are non-fire-related**.
+**False Alarms** account for **{pct_false_alarm:.1f}%**, **Special Services** for **{pct_special_service:.1f}%**,
+and **Fire** for just **{pct_fire:.1f}%** — meaning less than 1 in {fire_ratio} deployments involves a fire,
+and nearly **{pct_non_fire:.1f}%** of all callouts are non-fire-related.
 
 **Implication:** Performance benchmarks and resource planning should account for workload
 composition. False Alarms drive high incident volumes but represent operationally
@@ -255,14 +253,9 @@ if selected_incident == "All":
 
     st.markdown(f"""
 Not all incident types are attended equally fast (based on the full 2021–2025 dataset):
-
-- **False Alarms** record the highest 6-min compliance: **{comp_fa:.1f}%**, reflecting
-  simpler operational conditions and more accessible locations.
-- **Special Service** incidents consistently record the longest response times,
-  with compliance at only **{comp_ss:.1f}%**.
-- **Fire** incidents sit in between at **{comp_fi:.1f}%** compliance.
-
-The relative ranking between incident types remains stable throughout the year.
+**False Alarms** record the highest 6-min compliance at **{comp_fa:.1f}%**, reflecting simpler
+operational conditions, while **Special Service** incidents are the slowest at **{comp_ss:.1f}%**.
+**Fire** incidents sit in between at **{comp_fi:.1f}%**.
 
 **Implication:** Differences across incident types reflect operational complexity,
 not performance failures. Evaluating compliance without controlling for incident type
@@ -273,7 +266,7 @@ can produce misleading conclusions.
 # 4:
 if borough_available:
 
-    st.header("4. Geography is the Primary Performance Driver")
+    st.header("4. Geography is the Main Performance Driver")
 
     io_text = ""
     if inner_outer_available:
@@ -294,7 +287,7 @@ Borough-level analysis reveals a strong structural pattern in the selected data:
 Larger outer boroughs systematically struggle to meet the 6-minute target,
 while smaller, denser inner boroughs consistently outperform.
 
-**Implication:** Geographic scale rather than incident volume is the dominant constraint on
+**Implication:** Geographic scale rather than incident volume is the main constraint on
 response times. Station placement and coverage area matter more than demand volume alone.
 """)
     st.markdown("---")
@@ -306,10 +299,9 @@ if not pd.isna(median_turnout) and not pd.isna(median_travel):
 
     st.markdown(f"""
 Decomposing response time into its two components reveals a decisive finding:
-
-- **Median turnout time: {median_turnout:.2f} min**: consistent across all boroughs.
-- **Median travel time: {median_travel:.2f} min**: the dominant and variable component.
-- Travel time accounts for approximately **{travel_share:.0f}% of total median response time**.
+the **median turnout time of {median_turnout:.2f} min** is consistent across all boroughs,
+while **median travel time of {median_travel:.2f} min** is the dominant and variable component,
+accounting for approximately **{travel_share:.0f}% of total median response time**.
 
 Across the slowest boroughs, turnout times remain near-identical while travel times
 diverge substantially. This pattern holds throughout the day: turnout is stable,
@@ -333,8 +325,8 @@ target in the selected period:
 """)
     if delay_available:
         st.markdown(f"""
-- **{pct_not_held_up:.1f}%** were recorded as *"Not held up"*: no specific delay logged.
-- The remaining exceedances involve traffic, roadworks, traffic calming, or address issues.
+**{pct_not_held_up:.1f}%** of exceedances were recorded as *"Not held up"* — no specific delay logged.
+The remaining cases involve traffic, roadworks, traffic calming, or address issues.
 
 This indicates that the majority of exceedances occur under normal operating conditions
 rather than exceptional operational disruptions.

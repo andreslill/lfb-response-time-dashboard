@@ -355,10 +355,12 @@ else:
     gap_text = f"{difference_seconds:.0f} seconds"
 
 st.markdown(f"""
-- Outer London has a higher median response time **({outer_value:.2f} min)** 
-  than Inner London **({inner_value:.2f} min)**.
-- The gap of **{gap_text} ({percent_difference:.1f}% difference)**  highlights how borough density and travel distance directly affect response performance.
+Outer London records a median response time of **{gap_text}** longer than Inner London \
+(**{outer_value:.2f} min** vs. **{inner_value:.2f} min**), a difference of \
+**{percent_difference:.1f}%** that reflects the impact of borough size and travel distance \
+on response performance.
 """)
+
 
 with st.expander("Show Inner vs Outer Borough Classification"):
 
@@ -439,15 +441,12 @@ with st.expander("Show Inner vs Outer Borough Classification"):
 # ---------------------------------------------------------------------
 st.markdown("---")
 # ---------------------------------------------------------------------
-
-
 st.header("2. How Are Demand and Response Performance Distributed Across Boroughs?")
 
 st.markdown("""The map below explores geographic patterns across boroughs by examining
 incident demand, median response time, and compliance with the 6-minute target.""")
 
 # INTERACTIVE GEOGRAPHIC PERFORMANCE MAP
-
 
 # Calculate median response time per borough
 median_response_by_borough = (
@@ -701,7 +700,35 @@ st.markdown(
 # Dynamic Map Insights
 # Correct insight based on selected metric
 
-if metric_choice == "Incident Volume":
+if metric_choice == "Median Response Time":
+    outer_note = (
+        "confirming that larger outer boroughs face the greatest structural constraints."
+        if slowest_is_outer
+        else "suggesting a complex interaction between geography and other operational factors."
+    )
+    st.markdown(f"""
+Median response times range from **{fastest_map_val:.2f} min ({fastest_map_borough})** to \
+**{slowest_map_val:.2f} min ({slowest_map_borough})**, a spread of **{rt_map_spread:.2f} minutes**. \
+Longer response times cluster in larger outer boroughs, while central areas generally record faster attendance. \
+**{slowest_map_borough}** is {'an outer London borough' if slowest_is_outer else 'notable as a non-outer borough'}, \
+{outer_note} This pattern indicates that borough size and travel distance play a stronger role than incident volume.
+""")
+
+elif metric_choice == "Response within 6 min (%)":
+    outer_note = (
+        "consistent with the structural disadvantage faced by larger outer boroughs."
+        if lowest_comp_is_outer
+        else "suggesting additional factors beyond geographic size may be at play."
+    )
+    st.markdown(f"""
+6-minute compliance ranges from **{highest_comp_map_val:.1f}% ({highest_comp_map_borough})** to \
+**{lowest_comp_map_val:.1f}% ({lowest_comp_map_borough})**, a gap of **{comp_map_spread:.1f} percentage points**. \
+Higher compliance clusters in central boroughs, while several outer boroughs show significantly lower target achievement. \
+The lowest-performing borough, **{lowest_comp_map_borough}**, is {'an outer London borough' if lowest_comp_is_outer else 'notable as a non-outer borough'}, \
+{outer_note} This pattern mirrors the distribution of median response times and reinforces the structural relationship between borough size and performance.
+""")
+    
+elif metric_choice == "Incident Volume":
     st.markdown(f"""
 - Incident demand is most concentrated in **{highest_volume_borough}**
   ({highest_volume_val:,} incidents).
@@ -712,48 +739,6 @@ Despite this concentration of incidents in **{highest_volume_borough}**,
 slower response performance is not primarily observed in high-volume boroughs. 
 This suggests that incident volume alone does not explain geographic differences 
 in response times.
-""")
-
-elif metric_choice == "Median Response Time":
-    outer_note = (
-        "confirming that larger outer boroughs face the greatest structural constraints."
-        if slowest_is_outer
-        else "suggesting a complex interaction between geography and other operational factors."
-    )
-    st.markdown(f"""
-- Median response times vary across boroughs, ranging from
-  **{fastest_map_val:.2f} min ({fastest_map_borough})**
-  to **{slowest_map_val:.2f} min ({slowest_map_borough})**
-  ,a spread of **{rt_map_spread:.2f} minutes**.
-- Longer response times are clustered in larger outer boroughs,
-  while central areas generally demonstrate faster attendance.
-- **{slowest_map_borough}** is {'an outer London borough' if slowest_is_outer else 'notable as a non-outer borough'},
-  {outer_note}
-
-The geographic pattern of slower performance in outer boroughs contrasts with
-the central concentration of high incident numbers, indicating that borough size
-and travel distance play a stronger role than incident volume.
-""")
-
-elif metric_choice == "Response within 6 min (%)":
-    outer_note = (
-        "consistent with the structural disadvantage faced by larger outer boroughs."
-        if lowest_comp_is_outer
-        else "suggesting additional factors beyond geographic size may be at play."
-    )
-    st.markdown(f"""
-- 6-minute compliance rates range from
-  **{highest_comp_map_val:.1f}% ({highest_comp_map_borough})**
-  to **{lowest_comp_map_val:.1f}% ({lowest_comp_map_borough})**
-  ,a gap of **{comp_map_spread:.1f} percentage points** across boroughs.
-- Higher compliance rates cluster in central boroughs,
-  while several outer boroughs show significantly lower target achievement.
-- The lowest-performing borough, **{lowest_comp_map_borough}**,
-  is {'an outer London borough' if lowest_comp_is_outer else 'notable as a non-outer borough'},
-  {outer_note}
-
-This pattern mirrors the distribution of median response times and reinforces
-the structural relationship between borough size and response performance.
 """)
 
 # ---------------------------------------------------------------------
@@ -1247,34 +1232,26 @@ significance_outer = "statistically significant" if p_outer < 0.05 else "not sta
 
 if area_view == "All (Inner + Outer)":
     st.markdown(f"""
-- Borough size is **{interpret_strength(r).lower()}** and **{interpret_direction(r).lower()}** correlated with median response time 
-  **(r = {r:.2f}, R² = {r_squared:.2f})**, explaining approximately 
-  **{r_squared_percent:.0f}%** of the observed variation 
-  **(p {format_p(p)}; {significance_text})**.
-- The positive relationship remains observable within both groups:
-  Inner London **(r = {r_inner_val:.2f}; {significance_inner})** and 
-  Outer London **(r = {r_outer_val:.2f}; {significance_outer})**.
-- This suggests that borough size contributes to response performance 
-  regardless of structural classification.
+Borough size is **{interpret_strength(r).lower()}** and **{interpret_direction(r).lower()}** correlated with
+median response time **(r = {r:.2f}, R² = {r_squared:.2f})**, explaining approximately **{r_squared_percent:.0f}%**
+of the observed variation **(p {format_p(p)}; {significance_text})**. The positive relationship remains observable
+within both groups: Inner London **(r = {r_inner_val:.2f}; {significance_inner})** and Outer London **(r = {r_outer_val:.2f};
+{significance_outer})**.This suggests that borough size contributes to response performance regardless of structural classification.
 """)
 
 elif area_view == "Inner London only":
     st.markdown(f"""
-- Within Inner London, borough size shows a **{interpret_strength(r_inner_val).lower()} {interpret_direction(r_inner_val).lower()}** 
-  relationship with median response time **(r = {r_inner_val:.2f}, R² = {r_inner_val**2:.2f})**.
-- This explains approximately **{r_inner_val**2*100:.0f}%** of response time variation 
-  within Inner London **(p {format_p(p_inner)}; {significance_inner})**.
-- For context, the overall r across all boroughs is **{r:.2f}**. 
+Within Inner London, borough size shows a **{interpret_strength(r_inner_val).lower()} {interpret_direction(r_inner_val).lower()}** 
+  relationship with median response time **(r = {r_inner_val:.2f}, R² = {r_inner_val**2:.2f})**. This explains approximately **{r_inner_val**2*100:.0f}%** of response time variation 
+  within Inner London **(p {format_p(p_inner)}; {significance_inner})**. For context, the overall r across all boroughs is **{r:.2f}**. 
   Inner London {'shows a weaker' if abs(r_inner_val) < abs(r) else 'shows a comparable'} effect.
 """)
 
 else:
     st.markdown(f"""
-- Within Outer London, borough size shows a **{interpret_strength(r_outer_val).lower()} {interpret_direction(r_outer_val).lower()}** 
-  relationship with median response time **(r = {r_outer_val:.2f}, R² = {r_outer_val**2:.2f})**.
-- This explains approximately **{r_outer_val**2*100:.0f}%** of response time variation 
-  within Outer London **(p {format_p(p_outer)}; {significance_outer})**.
-- For context, the overall r across all boroughs is **{r:.2f}**. 
+Within Outer London, borough size shows a **{interpret_strength(r_outer_val).lower()} {interpret_direction(r_outer_val).lower()}** 
+  relationship with median response time **(r = {r_outer_val:.2f}, R² = {r_outer_val**2:.2f})**. This explains approximately **{r_outer_val**2*100:.0f}%** of response time variation 
+  within Outer London **(p {format_p(p_outer)}; {significance_outer})**. For context, the overall r across all boroughs is **{r:.2f}**. 
   Outer London {'shows a stronger' if abs(r_outer_val) > abs(r) else 'shows a comparable'} effect.
 """)
 
@@ -1400,10 +1377,10 @@ significance_c = (
 )
 
 st.markdown(f"""
-- The relationship between borough size and 6 minute compliance is **{strength_c} and {direction_c}**
-(r = {r_c:.2f}, R² = {r2_c:.2f}).
-- This indicates that the impact of borough size is not limited to response time but is also associated with lower target compliance.
-- The effect is **{significance_c}** (p {format_p(p_c)}), indicating that larger boroughs are less likely to meet the 6 minute response target.
+The relationship between borough size and 6 minute compliance is **{strength_c} and {direction_c}**
+(r = {r_c:.2f}, R² = {r2_c:.2f}). This indicates that the impact of borough size is not limited to
+response time but is also associated with lower target compliance. The effect is **{significance_c}**
+(p {format_p(p_c)}), indicating that larger boroughs are less likely to meet the 6 minute response target.
 """)
 
 # ---------------------------------------------------------------------

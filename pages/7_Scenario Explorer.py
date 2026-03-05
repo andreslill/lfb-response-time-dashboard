@@ -12,13 +12,6 @@ sns.set_theme(style="white", context="notebook")
 
 FIG_WIDTH = 10
 
-
-def style_axes(ax):
-    ax.xaxis.label.set_size(13)
-    ax.yaxis.label.set_size(13)
-    ax.tick_params(axis="both", which="major", labelsize=11)
-
-
 # ---------------------------------------------------------------------
 # Header
 st.title("Scenario Explorer")
@@ -79,8 +72,10 @@ else:
     median_turnout_sec = attendance_median_sec * 0.23
     travel_share = 77.0
 
+st.caption(f"{n_over_target:,} incidents exceeded 6 minutes in 2021–2025 for this borough.")
+
 # ---------------------------------------------------------------------
-# Current stats snapshot
+# KPIs
 st.subheader(f"Current Performance: {selected_borough.title()}")
 
 c1, c2, c3, c4 = st.columns(4)
@@ -104,7 +99,7 @@ st.markdown("---")
 st.subheader("Scenario: Uniform time reduction")
 st.markdown(
     "Move the slider to apply a uniform reduction (seconds) to every incident response time in this borough. "
-    "The page recalculates % within 6 minutes and median response time from the underlying incident data."
+    "The page recalculates  6-min compliance rate and median response time from the underlying incident data."
 )
 
 col_slider, col_note = st.columns([3, 1])
@@ -112,7 +107,7 @@ with col_slider:
     time_reduction_sec = st.slider(
         "Uniform time reduction (seconds)",
         min_value=0,
-        max_value=120,
+        max_value=300,
         value=0,
         step=5,
         help="Example: 30s could represent faster routing, small coverage improvements, or reduced delays in travel-related components.",
@@ -151,7 +146,7 @@ additional_within_total = int(round(within_gain_pp / 100 * n_incidents))
 if "Year" in borough_df.columns:
     n_years = int(borough_df["Year"].nunique())
 else:
-    n_years = 5  # fallback for your 2021–2025 dataset
+    n_years = 5  
 
 additional_within_per_year = int(round(additional_within_total / n_years)) if n_years > 0 else additional_within_total
 
@@ -161,9 +156,9 @@ st.markdown("---")
 st.subheader("Simulated outcome")
 
 r1, r2, r3, r4 = st.columns(4)
-r1.metric("% within 6 minutes (current)", f"{current_within_6:.1f}%")
+r1.metric("% Current response within 6 min (%)", f"{current_within_6:.1f}%")
 r2.metric(
-    "% within 6 minutes (simulated)",
+    "Simulated response within 6 minutes (%)",
     f"{new_within_6:.1f}%",
     delta=f"{within_gain_pp:+.1f} pp" if within_gain_pp != 0 else "No change",
 )

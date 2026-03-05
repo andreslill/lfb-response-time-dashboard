@@ -291,12 +291,11 @@ slowest_turnout_median = borough_decomp["TurnoutMedian"].median()
 slowest_travel_median = borough_decomp["TravelMedian"].median()
 
 st.markdown(f"""
-- Travel accounts for **{travel_share_pct:.0f}%** of the median response time.
-- Among the slowest boroughs, median turnout time is **{slowest_turnout_median:.2f} minutes**,
-  while travel time reaches **{slowest_travel_median:.2f} minutes**.
-- Turnout times vary only slightly across boroughs.
-- These results suggest that differences in response performance are primarily driven by travel
-  rather than station mobilisation.
+Travel accounts for **{travel_share_pct:.0f}%** of the median response time. 
+Among the slowest boroughs, median turnout time is **{slowest_turnout_median:.2f} minutes**,
+while travel time reaches **{slowest_travel_median:.2f} minutes**. Turnout 
+times vary only slightly across boroughs. These results suggest that differences in response performance are primarily driven by travel
+rather than station mobilisation.
 """)
 
 
@@ -802,19 +801,19 @@ if not stations_map.empty:
     )
 
     st.markdown(f"""
-**Map Insight ({period_label})**
 
-- The busiest station is **{busiest['station_name']}** with **{int(busiest['incidents']):,} incidents**.
-- The station with the longest median travel time is **{slowest['station_name']}** 
-  at **{slowest['median_travel_min']:.2f} minutes**.
-- **{lowest_home['station_name']}** has the lowest home share at 
-  **{lowest_home['home_share']*100:.1f}%**, indicating frequent cross-borough deployment.
-- Median travel time increases from **{med_travel_home_kpi:.2f} min** for home deployments to 
-  **{med_travel_away_kpi:.2f} min** for cross-borough responses, a **{travel_diff_pct:+.0f}%** 
-  difference, indicating longer distances when stations respond outside their home ground.
+The busiest station is **{busiest['station_name']}** with **{int(busiest['incidents']):,} incidents**.
+The station with the longest median travel time is **{slowest['station_name']}** 
+at **{slowest['median_travel_min']:.2f} minutes**. **{lowest_home['station_name']}** 
+has the lowest home share at **{lowest_home['home_share']*100:.1f}%**, indicating 
+frequent cross-borough deployment. Median travel time increases from **{med_travel_home_kpi:.2f} min** for home deployments to 
+**{med_travel_away_kpi:.2f} min** for cross-borough responses, a **{travel_diff_pct:+.0f}%** 
+difference, indicating longer distances when stations respond outside their home ground.
 """)
+# ---------------------------------------------------------------------
+st.markdown("---")
+# ---------------------------------------------------------------------
 
-# ------------------------------------------------------------
 st.header("3. How does Hour of Day influence Response Time?")
 
 st.markdown("""Hourly response time patterns are analysed to assess whether
@@ -934,12 +933,11 @@ else:
 range_ratio = round(dominant_range / other_range, 1) if other_range > 0 else 0
 
 st.markdown(f"""
-**Key Insights ({period_label})**
 
-- **{dominant} time** shows greater hourly variation, fluctuating by 
-  **{dominant_range:.2f} minutes** across the day and peaking around **{peak_hour}:00**.
-- **{other} time** varies by **{other_range:.2f} minutes**,
-  {"approximately the same magnitude, suggesting hourly conditions affect both components similarly."
+**{dominant} time** shows greater hourly variation, fluctuating by 
+**{dominant_range:.2f} minutes** across the day and peaking around
+**{peak_hour}:00**. **{other} time** varies by **{other_range:.2f} 
+ minutes**, {"approximately the same magnitude, suggesting hourly conditions affect both components similarly."
   if abs(travel_range - turnout_range) < 0.15
   else f"{range_ratio}x less, confirming that {'station mobilisation' if dominant == 'Travel' else 'travel conditions'} is more consistent throughout the day."}
 """)
@@ -1094,11 +1092,11 @@ else:
 top_driver = top_delay.iloc[0]
 
 st.markdown(f"""
-- A substantial share of exceedances (**{not_held_up_percent:.1f}%**) are recorded without
-  a specific delay factor ("Not held up"), indicating that most exceedances occur under normal
-  operating conditions rather than being driven by exceptional operational delays.
-- The remaining delay factors collectively account for approximately **{others_percent:.1f}%**,
-  indicating a moderate long-tail distribution of operational causes.
+A substantial share of exceedances (**{not_held_up_percent:.1f}%**) are recorded without
+a specific delay factor ("Not held up"), indicating that most exceedances occur under normal
+operating conditions rather than being driven by exceptional operational delays.
+The remaining delay factors collectively account for approximately **{others_percent:.1f}%**,
+indicating a moderate long-tail distribution of operational causes.
 """
 )
 

@@ -180,9 +180,10 @@ st.pyplot(fig)
 above_target    = 100 - response_within_6min
 mean_median_gap = round(mean - median, 2)
 st.markdown(f"""
-- The 6-minute target is met in **{response_within_6min:.1f}%** of incidents, meaning **{above_target:.1f}%** exceed it.
-- The mean ({mean:.2f} min) is **{mean_median_gap:.2f} min above the median ({median:.2f} min)**.
-- Extreme delays above 10 minutes affect **{extreme_delay_rate:.1f}%** of incidents{", well within acceptable range." if extreme_delay_rate < 5 else ", exceeding the 5% warning threshold."}
+The 6-minute target is met in **{response_within_6min:.1f}%** of incidents,
+meaning **{above_target:.1f}%** exceed it. The mean ({mean:.2f} min) is 
+**{mean_median_gap:.2f} min above the median ({median:.2f} min)**.
+Extreme delays above 10 minutes affect **{extreme_delay_rate:.1f}%** of incidents{", well within acceptable range." if extreme_delay_rate < 5 else ", exceeding the 5% warning threshold."}
 """)
 
 st.markdown("---")
@@ -287,9 +288,9 @@ trend_dir  = (
     else "stable"
 )
 st.markdown(f"""
-- Overall compliance trend is **{trend_dir}** over the observed period.
-- Best year: **{int(best_year['Year'])}** with **{best_year['ComplianceRate']:.1f}%** compliance.
-- Worst year: **{int(worst_year['Year'])}** with **{worst_year['ComplianceRate']:.1f}%** compliance.
+Overall compliance trend is **{trend_dir}** over the observed period.
+Best year: **{int(best_year['Year'])}** with **{best_year['ComplianceRate']:.1f}%** compliance.
+Worst year: **{int(worst_year['Year'])}** with **{worst_year['ComplianceRate']:.1f}%** compliance.
 """)
 
 st.markdown("---")
@@ -356,8 +357,8 @@ st.pyplot(fig)
 
 compliance_gap = top5.iloc[0]["ComplianceRate"] - bottom5.iloc[0]["ComplianceRate"]
 st.markdown(f"""
-- The best-performing borough (**{top5.iloc[0]['IncGeo_BoroughName'].title()}**, {top5.iloc[0]['ComplianceRate']:.1f}%) outperforms the worst (**{bottom5.iloc[0]['IncGeo_BoroughName'].title()}**, {bottom5.iloc[0]['ComplianceRate']:.1f}%) by **{compliance_gap:.1f} percentage points**.
-- Geographic variation, not operational differences, is the primary driver — larger outer boroughs face longer travel distances.
+The best-performing borough (**{top5.iloc[0]['IncGeo_BoroughName'].title()}**, {top5.iloc[0]['ComplianceRate']:.1f}%) outperforms the worst (**{bottom5.iloc[0]['IncGeo_BoroughName'].title()}**, {bottom5.iloc[0]['ComplianceRate']:.1f}%) by **{compliance_gap:.1f} percentage points**.
+Geographic variation, not operational differences, is the primary driver — larger outer boroughs face longer travel distances.
 """)
 
 st.markdown("---")
@@ -472,7 +473,7 @@ worst_val  = compliance_by_type.loc[compliance_by_type["ComplianceRate"].idxmin(
 type_gap   = best_val - worst_val
 
 st.markdown(f"""
-- **{best_type}** incidents have the highest 6-minute compliance at **{best_val:.1f}%**.
-- **{worst_type}** incidents have the lowest at **{worst_val:.1f}%** — a gap of **{type_gap:.1f} percentage points**.
-- Incident type explains some variation, but geographic factors remain the dominant driver.
+**{best_type}** incidents have the highest 6-minute compliance at **{best_val:.1f}%**.
+**{worst_type}** incidents have the lowest at **{worst_val:.1f}%**, a gap of **{type_gap:.1f} percentage points**.
+
 """)

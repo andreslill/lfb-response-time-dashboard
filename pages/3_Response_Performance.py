@@ -288,10 +288,10 @@ highest_exceed = exceed_6.idxmax()
 highest_extreme = extreme_10.idxmax()
 
 st.markdown(f"""
-- **{best_type}** records the highest 6-minute compliance ({within_6[best_type]:.1f}%), reflecting simpler operational conditions.
-- Responses exceeding 6 minutes are most frequent in **{highest_exceed}** ({exceed_6[highest_exceed]:.1f}%), consistent with the
-  broader range of operational scenarios and access conditions associated with these incidents.
-- Delays above 10 minutes remain limited overall, peaking in **{highest_extreme}** ({extreme_10[highest_extreme]:.1f}%).
+**{best_type}** records the highest 6-minute compliance ({within_6[best_type]:.1f}%), reflecting simpler operational conditions.
+Responses exceeding 6 minutes are most frequent in **{highest_exceed}** ({exceed_6[highest_exceed]:.1f}%), consistent with the
+broader range of operational scenarios and access conditions associated with these incidents.
+Delays above 10 minutes remain limited overall, peaking in **{highest_extreme}** ({extreme_10[highest_extreme]:.1f}%).
 """)
 
 
@@ -475,15 +475,13 @@ peak_gap_percent = (
 # Markdown Output 
 
 st.markdown(f"""
-- **Fire incidents** show their highest median in **{fire_peak_month}** ({fire_peak_value:.2f} min), while
+**Fire incidents** show their highest median in **{fire_peak_month}** ({fire_peak_value:.2f} min), while
   **Special Service** peaks in **{special_peak_month}** ({special_peak_value:.2f} min) and
   **False Alarms** in **{false_peak_month}** ({false_peak_value:.2f} min).
-- Across all months, **Special Service** consistently records the longest median response times, followed by **Fire**,
-  while **False Alarms** remain the fastest category.
-- At peak months, the gap between Special Service and False Alarm reaches approximately
+At peak months, the gap between Special Service and False Alarm reaches approximately
   {peak_gap_seconds:.0f} seconds ({peak_gap_percent:.1f}%), indicating structurally longer response times
   for more complex incidents.
-- Despite moderate seasonal variation, the relative ranking between incident types remains stable throughout the year(s).""")
+""")
 
 
 
@@ -576,10 +574,9 @@ st.pyplot(fig)
 st.markdown(
     f"""
 
-- The median response time shows a moderate variation by hour of day, ranging from **{min_val:.2f} minutes (minimum at {min_hour_label}:00)** 
+The median response time shows a moderate variation by hour of day, ranging from **{min_val:.2f} minutes (minimum at {min_hour_label}:00)** 
   to **{max_val:.2f} minutes (maximum at {max_hour_label}:00)**:  A difference of approximately **{diff:.2f} minutes (~{diff_seconds:.0f} seconds)**.
-- This minor variation is unlikely to be critical, suggesting that performance is largely consistent regardless of the time of day..
-
+This minor variation is unlikely to be critical, suggesting that performance is largely consistent regardless of the time of day.
 """
 )
 
