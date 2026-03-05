@@ -1,4 +1,5 @@
-# Introduction.py
+# page/0_Introduction.py
+
 import streamlit as st
 from data_loader import load_data
 
