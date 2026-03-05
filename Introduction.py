@@ -80,15 +80,24 @@ st.markdown("---")
 # Navigation cards
 st.subheader("Dashboard Pages")
 
-nav1, nav2, nav3 = st.columns(3)
+row1_col1, row1_col2 = st.columns(2)
+row2_col1, row2_col2 = st.columns(2)
+row3_col1, row3_col2 = st.columns(2)
 
-with nav1:
+with row1_col1:
     st.markdown(
         """
-        <div style="border:1px solid #e5e7eb; border-radius:8px; padding:16px; margin-bottom:12px;">
+        <div style="border:1px solid #e5e7eb; border-radius:8px; padding:16px;">
         <strong>Executive Summary</strong><br>
         <span style="color:#6b7280; font-size:0.9rem;">City-wide KPIs, compliance trend (2021–2025), best & worst boroughs, incident type breakdown.</span>
         </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+with row1_col2:
+    st.markdown(
+        """
         <div style="border:1px solid #e5e7eb; border-radius:8px; padding:16px;">
         <strong>Incident Composition</strong><br>
         <span style="color:#6b7280; font-size:0.9rem;">Workload by incident type, seasonal patterns, and hourly demand heatmap.</span>
@@ -97,14 +106,21 @@ with nav1:
         unsafe_allow_html=True,
     )
 
-with nav2:
+with row2_col1:
     st.markdown(
         """
-        <div style="border:1px solid #e5e7eb; border-radius:8px; padding:16px; margin-bottom:12px;">
+        <div style="border:1px solid #e5e7eb; border-radius:8px; padding:16px; margin-top:12px;">
         <strong>Response Performance</strong><br>
         <span style="color:#6b7280; font-size:0.9rem;">Compliance rates by incident type, month, and hour of day.</span>
         </div>
-        <div style="border:1px solid #e5e7eb; border-radius:8px; padding:16px;">
+        """,
+        unsafe_allow_html=True,
+    )
+
+with row2_col2:
+    st.markdown(
+        """
+        <div style="border:1px solid #e5e7eb; border-radius:8px; padding:16px; margin-top:12px;">
         <strong>Geographic Performance</strong><br>
         <span style="color:#6b7280; font-size:0.9rem;">Borough-level choropleth maps for response time, compliance, and incident volume.</span>
         </div>
@@ -112,24 +128,37 @@ with nav2:
         unsafe_allow_html=True,
     )
 
-with nav3:
+with row3_col1:
     st.markdown(
         """
-        <div style="border:1px solid #e5e7eb; border-radius:8px; padding:16px; margin-bottom:12px;">
-            <strong>Drivers of Response Time</strong><br>
-            <span style="color:#6b7280; font-size:0.9rem;">Turnout vs. travel time decomposition, hourly variation, delay code analysis.</span>
-        </div>
-        <div style="border:1px solid #e5e7eb; border-radius:8px; padding:16px; margin-bottom:12px;">
-            <strong>Key Findings & Implications</strong><br>
-            <span style="color:#6b7280; font-size:0.9rem;">Summary of findings, operational implications, and study limitations.</span>
-        </div>
-        <div style="border:1px solid #e5e7eb; border-radius:8px; padding:16px;">
-            <strong>Scenario Explorer</strong><br>
-            <span style="color:#6b7280; font-size:0.9rem;">Simulate travel time reductions per borough and recalculate 6-minute compliance from incident-level data.</span>
+        <div style="border:1px solid #e5e7eb; border-radius:8px; padding:16px; margin-top:12px;">
+        <strong>Drivers of Response Time</strong><br>
+        <span style="color:#6b7280; font-size:0.9rem;">Turnout vs. travel time decomposition, hourly variation, and delay code analysis.</span>
         </div>
         """,
         unsafe_allow_html=True,
     )
+
+with row3_col2:
+    st.markdown(
+        """
+        <div style="border:1px solid #e5e7eb; border-radius:8px; padding:16px; margin-top:12px;">
+        <strong>Key Findings & Implications</strong><br>
+        <span style="color:#6b7280; font-size:0.9rem;">Summary of findings, operational implications, and study limitations.</span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+st.markdown(
+    """
+    <div style="border:1px solid #e5e7eb; border-radius:8px; padding:16px; margin-top:12px;">
+    <strong>Scenario Explorer</strong><br>
+    <span style="color:#6b7280; font-size:0.9rem;">Simulate travel time reductions per borough and recalculate 6-minute compliance from incident-level data.</span>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 
 st.markdown("---")
