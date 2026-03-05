@@ -23,7 +23,7 @@ def style_axes(ax):
 # Header
 st.title("Scenario Explorer")
 st.markdown(
-    "**How much would % within 6 minutes improve under uniform time reductions?**  \n"
+    "**How much would 6-min Compliance Rate improve under uniform time reductions?**  \n"
     "Select a borough and apply a uniform reduction (seconds) to incident response times — "
     "recalculated from the actual incident-level data (2021–2025)."
 )
@@ -86,7 +86,7 @@ st.subheader(f"Current Performance: {selected_borough.title()}")
 c1, c2, c3, c4 = st.columns(4)
 c1.metric("Incidents analysed", f"{n_incidents:,}")
 c2.metric(
-    "% within 6 minutes",
+    "Response within 6 min",
     f"{current_within_6:.1f}%",
     delta=f"{current_within_6 - city_within_6:+.1f} pp vs London avg",
 )
