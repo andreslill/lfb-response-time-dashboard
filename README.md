@@ -52,8 +52,7 @@ Adherence to first appliance targets is examined across time periods, incident t
 | **Key Findings & Implications** | Summary of findings, operational implications, study limitations, and further outlook |
 | **Scenario Explorer** | Interactive what-if tool: simulate uniform travel time reductions per borough and recalculate 6-minute compliance directly from incident-level data |
 
-All pages update dynamically based on sidebar filters (Year, Month, Incident Type).
-
+All descriptive pages update dynamically based on sidebar filters (Year, Month, Incident Type). Scenario Explorer uses full 2021–2025 for maximum sample.
 ---
 
 ## Key Findings
