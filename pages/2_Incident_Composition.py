@@ -206,11 +206,9 @@ special_service_share = incident_share.get("Special Service", 0)
 fire_share = incident_share.get("Fire", 0)
 
 st.markdown(f"""
-Nearly **{100 - fire_share}%** of deployments are non-fire related.
-False Alarms dominate the workload and shape overall demand patterns.
-The imbalance between fire and non-fire incidents highlights
-the importance of understanding workload composition when evaluating
-response performance.
+Nearly **{100 - fire_share}%** of deployments are non-fire related, with
+false Alarms accountung for the largest share of the workload and shaping 
+overall demand patterns.
 """)
 
 
@@ -491,16 +489,13 @@ special_peak_value = int(monthly_special.max())
 
 
 st.markdown(f"""
-Overall incident demand peaks in **{peak_month}** and reaches its lowest level in **{low_month}**,
-  representing a seasonal variation of approximately **{seasonal_range_pct}%**.
-- **False Alarms** follow a similar demand curve, peaking in **{false_peak_month}**.
-- **Special Services** display slight seasonal variation, with a peak in **{special_peak_month}**.
-- **Fire** incidents show a pronounced concentration in summer, peaking in **{fire_peak_month}**,
-  suggesting potential seasonal drivers.
-- Fire incidents represent their largest share of the monthly workload in **{fire_share_peak_month}**
-  ({fire_share_peak_val:.1f}% of all incidents that month), compared to only **{fire_share_low_val:.1f}%
-  in {fire_share_low_month}**, a {round(fire_share_peak_val - fire_share_low_val, 1)} percentage point
-  seasonal shift in fire risk.
+Overall incident demand peaks in **{peak_month}** and is lowest in **{low_month}**
+(seasonal variation: **{seasonal_range_pct}%**). All three incident types follow broadly similar
+seasonal curves — **False Alarms** peak in **{false_peak_month}**, **Special Services** in
+**{special_peak_month}**, and **Fire** in **{fire_peak_month}**. Fire incidents show the most
+pronounced concentration, shifting from **{fire_share_low_val:.1f}%** of the monthly workload
+in **{fire_share_low_month}** to **{fire_share_peak_val:.1f}%** in **{fire_share_peak_month}** —
+a **{round(fire_share_peak_val - fire_share_low_val, 1)} percentage point** seasonal shift in fire risk.
 """)
 
 
@@ -641,15 +636,11 @@ weekend_pattern  = "higher" if weekend_diff_pct > 0 else "lower"
 type_label = selected_incident_type if selected_incident_type != "All" else "overall"
 
 st.markdown(f"""
-- **{type_label.capitalize()} incidents** peak at **{peak_hour:02d}:00**
-  and are lowest at **{low_hour:02d}:00**.
-- The busiest single hour-day combination is **{peak_combo_day} at {peak_combo_hour:02d}:00**.
-- Daytime demand (**07:00–22:00**) averages **{day_night_ratio}x** more incidents per hour
-  than the night period (**00:00–06:00**).
-- **{peak_day}** is the busiest day of the week, while **{low_day}** records the lowest volume.
-- Weekend incident volumes are **{abs(weekend_diff_pct):.1f}% {weekend_pattern}**
-  than the weekday average, suggesting {"higher leisure and social activity driving demand"
-  if weekend_diff_pct > 0 else "reduced commercial and occupational activity at weekends"}.
+**{type_label.capitalize()} incidents** peak at **{peak_hour:02d}:00** and are lowest at **{low_hour:02d}:00**,
+with the busiest single combination being **{peak_combo_day} at {peak_combo_hour:02d}:00**.
+Daytime demand (**07:00–22:00**) averages **{day_night_ratio}x** more incidents per hour than overnight
+(**00:00–06:00**). **{peak_day}** is the busiest day of the week, while weekend volumes are
+**{abs(weekend_diff_pct):.1f}% {weekend_pattern}** than the weekday average.
 """)
 
 # ---------------------------------------------------------------------
