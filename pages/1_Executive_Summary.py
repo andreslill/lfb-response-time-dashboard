@@ -194,8 +194,8 @@ st.markdown("---")
 st.subheader("Compliance Trend by Year (2021–2025)")
 st.markdown(
     "<div style='color:#6b7280; font-size:0.85rem; margin-bottom:10px;'>"
-    "Data shown: All years, " + incident_label. +
-    " Trend is shown unfiltered by year to preserve temporal context."
+    "Data shown: All years, " + incident_label + 
+    " . Trend is shown unfiltered by year to preserve temporal context."
     "</div>",
     unsafe_allow_html=True,
 )
