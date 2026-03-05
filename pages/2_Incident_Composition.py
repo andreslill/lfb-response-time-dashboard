@@ -102,8 +102,6 @@ elif selected_year == "All" and selected_month != "All":
 else:
     period_label = f"{selected_month} {selected_year}"
 
-st.caption(f"Data shown: {period_label}")
-
 # ---------------------------------------------------------------------
 # Convert filtered_df(mobilisation level) to incident level (first pump only)
 
@@ -127,6 +125,13 @@ st.markdown(
 
 
 st.subheader("Incident Mix Distribution (%)")
+
+st.markdown(
+    f"<div style='margin-top:-10px; margin-bottom:8px; color:#6b7280; font-size:0.85rem;'>"
+    f"Data shown: {period_label}"
+    f"</div>",
+    unsafe_allow_html=True
+)
 
 st.markdown("<br>", unsafe_allow_html=True) # space
 
@@ -201,8 +206,6 @@ special_service_share = incident_share.get("Special Service", 0)
 fire_share = incident_share.get("Fire", 0)
 
 st.markdown(f"""
-    **Key Insights**
-
 - Nearly **{100 - fire_share}%** of deployments are non-fire related.
 - False Alarms dominate the workload and shape overall demand patterns.
 - The imbalance between fire and non-fire incidents highlights
@@ -215,7 +218,13 @@ st.markdown(f"""
 # Show Special Service Type Breakdown
 
 with st.expander("Show Special Service Type Breakdown"):
-
+    
+    st.markdown(
+    f"<div style='margin-top:-10px; margin-bottom:8px; color:#6b7280; font-size:0.85rem;'>"
+    f"Data shown: {period_label}"
+    f"</div>",
+    unsafe_allow_html=True
+    )
     st.subheader("Top 10 Special Service Incident Categories")
 
     special_df = (
@@ -271,6 +280,39 @@ st.markdown("---")
 
 st.subheader("Monthly Incident Trends by Incident Type")
 
+# Trend chart uses year filter only
+# month filter would collapse data to a single point
+if selected_year == "All":
+    trend_df = df.copy()
+else:
+    trend_df = df[df["Year"] == selected_year]
+
+trend_incidents = (
+    trend_df
+    .sort_values("PumpOrder")
+    .drop_duplicates("IncidentNumber")
+    .copy()
+)
+# Trend period label
+# year only, never includes month
+
+if selected_year == "All":
+    trend_period_label = f"{min_year}–{max_year}"
+else:
+    trend_period_label = str(selected_year)
+
+st.markdown(
+    f"""
+    <div style='margin-top:-10px; margin-bottom:2px; color:#6b7280; font-size:0.85rem;'>
+      Data shown: {trend_period_label}
+    </div>
+    <div style='margin-top:0px; margin-bottom:10px; color:#9ca3af; font-size:0.8rem;'>
+      Note: Monthly trends reflect the full year and are not affected by the month filter.
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
 st.markdown("<br>", unsafe_allow_html=True) # space
 
 # legend
@@ -283,7 +325,7 @@ col4.markdown("<span style='color:#ff7f0e;'>●</span> Fire", unsafe_allow_html=
 
 # Monthly incident counts by incident type
 monthly_incidents_by_type = (
-    filtered_incidents
+    trend_incidents
     .groupby(["Month", "IncidentGroup"])["IncidentNumber"]
     .size()
     .reset_index(name="IncidentCount")
@@ -291,7 +333,7 @@ monthly_incidents_by_type = (
 
 # Monthly incident counts across all incident types
 monthly_incidents_total = (
-    filtered_incidents
+    trend_incidents
     .groupby("Month")["IncidentNumber"]
     .size()
     .reset_index(name="IncidentCount")
@@ -373,7 +415,7 @@ month_order = [
 
 #  Monthly totals (All Incidents) 
 monthly_totals = (
-    filtered_incidents
+    trend_incidents
     .groupby("MonthName")
     .size()
     .reindex(month_order)
@@ -393,7 +435,7 @@ else:
 
 # Fire 
 monthly_fire = (
-    filtered_incidents[filtered_incidents["IncidentGroup"] == "Fire"]
+    trend_incidents[trend_incidents["IncidentGroup"] == "Fire"]
     .groupby("MonthName")
     .size()
     .reindex(month_order)
@@ -405,13 +447,13 @@ fire_peak_value = int(monthly_fire.max())
 
 # Month with highest Fire share relative to total incidents
 monthly_fire_share = (
-    filtered_incidents[filtered_incidents["IncidentGroup"] == "Fire"]
+    trend_incidents[trend_incidents["IncidentGroup"] == "Fire"]
     .groupby("MonthName")
     .size()
     .reindex(month_order)
     .dropna()
     .div(
-        filtered_incidents.groupby("MonthName").size().reindex(month_order).dropna()
+        trend_incidents.groupby("MonthName").size().reindex(month_order).dropna()
     )
     .mul(100)
     .round(1)
@@ -424,7 +466,7 @@ fire_share_low_val    = monthly_fire_share.min()
 
 # False Alarm 
 monthly_false = (
-    filtered_incidents[filtered_incidents["IncidentGroup"] == "False Alarm"]
+    trend_incidents[trend_incidents["IncidentGroup"] == "False Alarm"]
     .groupby("MonthName")
     .size()
     .reindex(month_order)
@@ -437,7 +479,7 @@ false_peak_value = int(monthly_false.max())
 
 # Special Service 
 monthly_special = (
-    filtered_incidents[filtered_incidents["IncidentGroup"] == "Special Service"]
+    trend_incidents[trend_incidents["IncidentGroup"] == "Special Service"]
     .groupby("MonthName")
     .size()
     .reindex(month_order)
@@ -449,8 +491,6 @@ special_peak_value = int(monthly_special.max())
 
 
 st.markdown(f"""
-**Seasonal Insights**
-
 - Overall incident demand peaks in **{peak_month}** and reaches its lowest level in **{low_month}**,
   representing a seasonal variation of approximately **{seasonal_range_pct}%**.
 - **False Alarms** follow a similar demand curve, peaking in **{false_peak_month}**.
@@ -472,6 +512,13 @@ st.markdown("---")
 # Heatmap
 
 st.subheader("Daily and Hourly Incident Heatmap")
+
+st.markdown(
+    f"<div style='margin-top:-10px; margin-bottom:8px; color:#6b7280; font-size:0.85rem;'>"
+    f"Data shown: {period_label}"
+    f"</div>",
+    unsafe_allow_html=True
+)
 
 incident_options = [
     "All",
@@ -512,12 +559,11 @@ daily_hourly_incidents = (
     .reindex(index=range(24))          # ensure 0–23
     .reindex(columns=weekday_order)    # Monday → Sunday
     .fillna(0)
-    .T                                 # 🔁 swap axes
+    .T                                 # swap axes
 )
 
 # -------------------------
 # Plot
-# -------------------------
 
 fig, ax = plt.subplots(figsize=(FIG_WIDTH, 10))
 
@@ -595,8 +641,6 @@ weekend_pattern  = "higher" if weekend_diff_pct > 0 else "lower"
 type_label = selected_incident_type if selected_incident_type != "All" else "overall"
 
 st.markdown(f"""
-**Key Insights**
-
 - **{type_label.capitalize()} incidents** peak at **{peak_hour:02d}:00**
   and are lowest at **{low_hour:02d}:00**.
 - The busiest single hour-day combination is **{peak_combo_day} at {peak_combo_hour:02d}:00**.
@@ -608,10 +652,20 @@ st.markdown(f"""
   if weekend_diff_pct > 0 else "reduced commercial and occupational activity at weekends"}.
 """)
 
+# ---------------------------------------------------------------------
 st.markdown("---")
-st.caption(
-    "London Fire Brigade Response Time & Operational Performance Analysis (2021-2025)· Andrés Lill · February 2026"
+# ---------------------------------------------------------------------
+
+st.markdown(
+  "<div style='margin-top:12px; padding-left:12px; border-left:3px solid #e5e7eb; "
+  "color:#4b5563; font-size:0.95rem;'>"
+  "<strong>In summary:</strong> Demand is driven primarily by non-fire incidents, with clear seasonality and a strong "
+  "daytime/weekend pattern."
+  "</div>",
+  unsafe_allow_html=True
 )
 
-
-
+st.markdown("---")
+st.caption(
+    "London Fire Brigade Response Time Analysis (2021–2025) · Andrés Lill · February 2026"
+)

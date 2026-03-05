@@ -9,6 +9,9 @@ import seaborn as sns
 import geopandas as gpd
 import folium
 from streamlit_folium import st_folium
+from folium.plugins import MarkerCluster
+from branca.colormap import linear
+import re as _re
 
 # ------------------------------------------------------------
 # Page config + theme
@@ -105,15 +108,13 @@ if selected_year == "All" and selected_month == "All":
     period_label = f"{min_year}–{max_year}"
 
 elif selected_year != "All" and selected_month == "All":
-    period_label = f"{selected_year}, January–December"
+    period_label = f"{selected_year}"
 
 elif selected_year == "All" and selected_month != "All":
     period_label = f"{selected_month} months between {min_year} and {max_year}"
 
 else:
     period_label = f"{selected_month} {selected_year}"
-
-st.caption(f"Data shown: {period_label}")
 
 # ------------------------------------------------------------
 # Convert filtered_df(mobilisation level) to incident level (first pump only)
@@ -186,11 +187,17 @@ st.subheader("Top 10 Slowest Boroughs: Response Time Decomposition")
 st.markdown("""The ten slowest boroughs are analysed to understand which
             response component accounts for their extended median response times.
             """)
+st.markdown(
+    f"<div style='margin-top:-10px; margin-bottom:8px; color:#6b7280; font-size:0.85rem;'>"
+    f"Data shown: {period_label}"
+    f"</div>",
+    unsafe_allow_html=True
+)
 
 # Borough-level medians
 borough_decomp = (
     filtered_incidents
-    .groupby("IncGeo_BoroughName")
+    .groupby("IncGeo_BoroughName", observed=True)
     .agg(
         TurnoutMedian=("TurnoutMinutes", "median"),
         TravelMedian=("TravelMinutes", "median"),
@@ -284,15 +291,12 @@ slowest_turnout_median = borough_decomp["TurnoutMedian"].median()
 slowest_travel_median = borough_decomp["TravelMedian"].median()
 
 st.markdown(f"""
-**Key Insights**
-
 - Travel accounts for **{travel_share_pct:.0f}%** of the median response time.
 - Among the slowest boroughs, median turnout time is **{slowest_turnout_median:.2f} minutes**,
   while travel time reaches **{slowest_travel_median:.2f} minutes**.
 - Turnout times vary only slightly across boroughs.
 - These results suggest that differences in response performance are primarily driven by travel
   rather than station mobilisation.
-  
 """)
 
 
@@ -304,7 +308,7 @@ overall_turnout_median = filtered_incidents["TurnoutMinutes"].median()
 
 turnout_stats = (
     filtered_incidents
-    .groupby("IncGeo_BoroughName")["TurnoutMinutes"]
+    .groupby("IncGeo_BoroughName", observed=True)["TurnoutMinutes"]
     .agg(["median", "std"])
     .reset_index()
 )
@@ -322,7 +326,7 @@ with st.expander("Validation: Turnout time is stable across boroughs"):
     # Borough-level medians
     borough_medians = (
         filtered_incidents
-        .groupby("IncGeo_BoroughName")
+        .groupby("IncGeo_BoroughName", observed=True)
         .agg(
             TurnoutMedian=("TurnoutMinutes", "median"),
             TravelMedian=("TravelMinutes", "median")
@@ -376,13 +380,455 @@ st.markdown("---")
 # ---------------------------------------------------------------------
 
 # ------------------------------------------------------------
-st.header("2. How does Hour of Day influence Response Time")
+# Station Coverage and Cross-Borough Deployment
+
+
+STATIONS_PARQUET = "Data/processed/stations_london_cov.parquet"
+
+@st.cache_data
+def load_station_coords(path: str) -> pd.DataFrame:
+    """Load pre-computed station coordinates from prepare_station_coverage.py output."""
+    return pd.read_parquet(path)
+
+def norm_station_name(x: str) -> str:
+    """Normalise station names for joining — keep consistent with prepare script."""
+    if pd.isna(x):
+        return ""
+    x = str(x).strip().lower()
+    x = x.replace("&", "and")
+    x = _re.sub(r"[^a-z0-9\s]", " ", x)
+    x = _re.sub(r"\s+", " ", x).strip()
+    return x
+
+def norm_borough(x: str) -> str:
+    """Normalise borough names for joining."""
+    if pd.isna(x):
+        return ""
+    x = str(x).strip().lower()
+    x = x.replace("&", "and")
+    x = _re.sub(r"\s+", " ", x)
+    return x
+
+def make_colormap(series: pd.Series, palette: str = "YlOrRd"):
+    """Build a branca linear colormap scaled to the data range.
+    branca palette names use _09 suffix: YlOrRd_09, PuBuGn_09, YlGnBu_09, PuRd_09
+    """
+    s = series.dropna()
+    if s.empty:
+        return None
+    vmin, vmax = float(s.min()), float(s.max())
+    if vmin == vmax:
+        vmax = vmin + 1e-9
+    # branca appends _09 to colorbrewer palette names
+    palette_key = palette if hasattr(linear, palette) else f"{palette}_09"
+    return getattr(linear, palette_key).scale(vmin, vmax)
+st.header("2. Station Coverage and Cross-Borough Deployment")
+
+# -----------------------------
+# Build station KPIs first (needed for KPI bar above the map)
+
+station_df = filtered_incidents.copy()
+
+need_cols = {"DeployedFromStation_Name", "TravelMinutes", "DeployedFromLocation"}
+missing_cols = need_cols - set(station_df.columns)
+if missing_cols:
+    st.warning(f"Missing columns needed for station KPIs: {sorted(missing_cols)}")
+    st.stop()
+
+station_kpis = (
+    station_df
+    .groupby("DeployedFromStation_Name", observed=True)
+    .agg(
+        incidents=("IncidentNumber", "count"),
+        median_travel_min=("TravelMinutes", "median"),
+        home_share=("DeployedFromLocation", lambda s: (s == "Home Station").mean()),
+    )
+    .reset_index()
+)
+station_kpis["station_key"] = station_kpis["DeployedFromStation_Name"].apply(norm_station_name)
+
+coords = load_station_coords(STATIONS_PARQUET).copy()
+coords = coords.dropna(subset=["station_lat", "station_lon"])
+coords = coords.drop(columns=["mobilisations", "median_travel_sec", "median_travel_min", "home_share"], errors="ignore")
+
+if "station_key" not in coords.columns:
+    base_name = "station_name" if "station_name" in coords.columns else "station_name_raw"
+    coords["station_key"] = coords[base_name].apply(norm_station_name)
+
+stations_map = coords.merge(
+    station_kpis[["station_key", "incidents", "median_travel_min", "home_share"]],
+    on="station_key",
+    how="left",
+)
+stations_map["kpi_matched"] = stations_map["incidents"].notna()
+stations_map = stations_map[stations_map["kpi_matched"]].copy()
+
+if stations_map.empty:
+    st.warning("No station points available for the current filters.")
+    st.stop()
+
+# -----------------------------
+# KPI Bar 
+
+med_travel_home_kpi = filtered_incidents[
+    filtered_incidents["DeployedFromLocation"] == "Home Station"
+]["TravelMinutes"].median()
+med_travel_away_kpi = filtered_incidents[
+    filtered_incidents["DeployedFromLocation"] != "Home Station"
+]["TravelMinutes"].median()
+avg_home_share_kpi  = stations_map["home_share"].mean() * 100
+
+k1, k2, k3, k4 = st.columns(4)
+k1.metric("Stations shown", f"{len(stations_map)}")
+k2.metric("Avg home share", f"{avg_home_share_kpi:.1f}%")
+k3.metric("Median travel time (home)", f"{med_travel_home_kpi:.2f} min")
+k4.metric("Median travel time (away)", f"{med_travel_away_kpi:.2f} min")
+
+# -----------------------------
+# Context + research question
+
+st.markdown(
+    "All 102 London Fire Brigade stations are mapped to examine how geographic coverage "
+    "and cross-borough deployment influence travel time."
+    "Cross-borough deployments refer to responses where a station attends an incident outside its home ground. "
+    "[london-fire.gov.uk](https://www.london-fire.gov.uk/community/your-borough/)"
+)
+st.markdown(
+    "**Are longer travel times driven by geographic coverage gaps and cross-borough deployment, "
+    "or by exceptional operational delays?**"
+)
+
+# -----------------------------
+# Filters + toggles
+
+c1, c2, c3 = st.columns([1, 1, 1])
+
+with c1:
+    deployment_scope = st.selectbox(
+        "Deployments",
+        ["All (home + away)", "Home station only", "Away / out-of-area only"],
+        index=0,
+    )
+
+with c2:
+    metric_color = st.selectbox(
+        "Colour stations by",
+        ["Median travel time (min)", "Incidents (count)", "Home share (%)", "No colour (uniform)"],
+        index=0,
+    )
+
+with c3:
+    show_flows = st.toggle("Show station → borough flows", value=False)
+
+# Apply Home/Away scope to stations_map
+if deployment_scope == "Home station only":
+    station_df_scoped = station_df[station_df["DeployedFromLocation"] == "Home Station"]
+elif deployment_scope == "Away / out-of-area only":
+    station_df_scoped = station_df[station_df["DeployedFromLocation"] != "Home Station"]
+else:
+    station_df_scoped = station_df
+
+# Recompute KPIs for scoped view
+station_kpis_scoped = (
+    station_df_scoped
+    .groupby("DeployedFromStation_Name", observed=True)
+    .agg(
+        incidents=("IncidentNumber", "count"),
+        median_travel_min=("TravelMinutes", "median"),
+        home_share=("DeployedFromLocation", lambda s: (s == "Home Station").mean()),
+    )
+    .reset_index()
+)
+station_kpis_scoped["station_key"] = station_kpis_scoped["DeployedFromStation_Name"].apply(norm_station_name)
+
+stations_map = coords.merge(
+    station_kpis_scoped[["station_key", "incidents", "median_travel_min", "home_share"]],
+    on="station_key",
+    how="left",
+)
+stations_map["kpi_matched"] = stations_map["incidents"].notna()
+stations_map = stations_map[stations_map["kpi_matched"]].copy()
+
+if stations_map.empty:
+    st.warning("No station points available for the current filters.")
+    st.stop()
+
+# -----------------------------
+# Build colormap for selected metric
+
+cmap = None
+color_col = None
+legend_name_station = None
+
+if metric_color == "Median travel time (min)":
+    color_col = "median_travel_min"
+    legend_name_station = "Median travel time (min)"
+    cmap = make_colormap(stations_map[color_col], palette="YlOrRd")
+
+elif metric_color == "Incidents (count)":
+    color_col = "incidents"
+    legend_name_station = "Incidents"
+    cmap = make_colormap(stations_map[color_col], palette="PuBuGn")
+
+elif metric_color == "Home share (%)":
+    stations_map["home_share_pct"] = (stations_map["home_share"] * 100).round(1)
+    color_col = "home_share_pct"
+    legend_name_station = "Home share (%)"
+    cmap = make_colormap(stations_map[color_col], palette="YlGnBu")
+
+def radius_from_incidents(x) -> float:
+    """Scale marker radius by incident count — min 3, max 10."""
+    if pd.isna(x):
+        return 3
+    r = 3 + (float(x) ** 0.5) / 18
+    return max(3, min(r, 10))
+
+# -----------------------------
+# Build Folium map 
+
+m_stations = folium.Map(
+    location=[51.5074, -0.1278],
+    zoom_start=10,
+    min_zoom=10,
+    max_zoom=10,
+    zoom_control=False,
+    scrollWheelZoom=False,
+    dragging=False,
+    doubleClickZoom=False,
+    touchZoom=False,
+    tiles="CartoDB positron",
+)
+
+# Borough boundaries (inner lines)
+folium.GeoJson(
+    boroughs,
+    name="Borough boundaries",
+    style_function=lambda x: {
+        "fillOpacity": 0,
+        "color": "#6b7280",
+        "weight": 0.8,
+    },
+).add_to(m_stations)
+
+# London outer boundary (bold outline)
+london_outline = boroughs.dissolve()
+folium.GeoJson(
+    london_outline,
+    name="London boundary",
+    style_function=lambda x: {
+        "fillOpacity": 0,
+        "color": "#1f2937",
+        "weight": 2.5,
+    },
+).add_to(m_stations)
+
+marker_parent = m_stations
+
+for _, row in stations_map.iterrows():
+    name    = row.get("station_name", row.get("station_name_raw", "Unknown"))
+    lat     = float(row["station_lat"])
+    lon     = float(row["station_lon"])
+    inc     = row.get("incidents", None)
+    med_tr  = row.get("median_travel_min", None)
+    hs      = row.get("home_share", None)
+    matched = bool(row.get("kpi_matched", False))
+
+    if matched and cmap is not None and color_col is not None and pd.notna(row.get(color_col)):
+        col = cmap(row[color_col])
+    elif not matched:
+        col = "#6b7280"
+    else:
+        col = "#2b6cb0"
+
+    tooltip_lines = [f"<b>{name}</b>"]
+    if matched:
+        if pd.notna(inc):
+            tooltip_lines.append(f"Incidents: {int(inc):,}")
+        if pd.notna(med_tr):
+            tooltip_lines.append(f"Median travel: {float(med_tr):.2f} min")
+        if pd.notna(hs):
+            tooltip_lines.append(f"Home share: {float(hs)*100:.1f}%")
+    else:
+        tooltip_lines.append("No KPI match for current filters.")
+
+    folium.CircleMarker(
+        location=[lat, lon],
+        radius=radius_from_incidents(inc) if matched else 4,
+        color=col,
+        fill=True,
+        fill_color=col,
+        fill_opacity=0.85,
+        weight=1,
+        tooltip=folium.Tooltip("<br>".join(tooltip_lines), sticky=True),
+    ).add_to(marker_parent)
+
+if cmap is not None and legend_name_station is not None:
+    cmap.caption = legend_name_station
+    cmap.add_to(m_stations)
+
+# Optional flows
+if show_flows:
+    boroughs_proj = boroughs.to_crs(epsg=27700).copy()
+    boroughs_proj["centroid"] = boroughs_proj.geometry.centroid
+    boroughs_cent = boroughs_proj.set_geometry("centroid").to_crs(epsg=4326)
+
+    borough_centroids_flow = boroughs_cent[["NAME", "centroid"]].copy()
+    borough_centroids_flow["borough_lat"] = borough_centroids_flow["centroid"].y
+    borough_centroids_flow["borough_lon"] = borough_centroids_flow["centroid"].x
+    borough_centroids_flow["borough_key"] = borough_centroids_flow["NAME"].apply(norm_borough)
+
+    flow_df = station_df_scoped.copy()
+    flow_df["station_key"] = flow_df["DeployedFromStation_Name"].apply(norm_station_name)
+    flow_df["borough_key"] = flow_df["IncGeo_BoroughName"].apply(norm_borough)
+
+    flows = (
+        flow_df
+        .groupby(["station_key", "borough_key"], observed=True)
+        .agg(
+            incidents=("IncidentNumber", "count"),
+            median_travel_min=("TravelMinutes", "median"),
+        )
+        .reset_index()
+    )
+
+    station_coords_flow = coords[["station_key", "station_lat", "station_lon"]].drop_duplicates()
+    flows = flows.merge(station_coords_flow, on="station_key", how="left")
+    flows = flows.merge(
+        borough_centroids_flow[["borough_key", "borough_lat", "borough_lon"]],
+        on="borough_key", how="left"
+    )
+    flows = flows.dropna(subset=["station_lat", "station_lon", "borough_lat", "borough_lon"])
+
+    if len(flows):
+        fc1, fc2, fc3 = st.columns([1, 1, 1])
+        with fc1:
+            max_lines = int(st.slider("Max flow lines", 100, 5000, 1200, 100))
+        with fc2:
+            min_flow_inc = int(st.slider(
+                "Min incidents per flow", 1, int(flows["incidents"].max()), 50, 10
+            ))
+        with fc3:
+            flow_colour = st.selectbox(
+                "Colour flows by",
+                ["Incidents", "Median travel time (min)", "Uniform"],
+                index=0
+            )
+
+        f = flows.loc[flows["incidents"] >= min_flow_inc].copy()
+        f = f.sort_values("incidents", ascending=False).head(max_lines)
+
+        flow_layer = folium.FeatureGroup(name="Station → Borough flows", show=True)
+        flow_layer.add_to(m_stations)
+
+        flow_cmap = None
+        if flow_colour == "Incidents":
+            flow_cmap = make_colormap(f["incidents"], palette="PuRd")
+        elif flow_colour == "Median travel time (min)":
+            flow_cmap = make_colormap(f["median_travel_min"], palette="YlOrRd")
+
+        for _, r in f.iterrows():
+            inc_flow    = float(r["incidents"])
+            med_tr_flow = float(r["median_travel_min"]) if pd.notna(r.get("median_travel_min")) else None
+            w = 1 + min(6, (inc_flow ** 0.5) / 10)
+
+            if flow_colour == "Uniform":
+                c = "#111827"
+            elif flow_cmap is not None:
+                val = inc_flow if flow_colour == "Incidents" else (med_tr_flow or 0)
+                c = flow_cmap(val)
+            else:
+                c = "#111827"
+
+            tip = f"Incidents: {int(inc_flow):,}"
+            if med_tr_flow is not None:
+                tip += f"<br>Median travel: {med_tr_flow:.2f} min"
+
+            folium.PolyLine(
+                locations=[
+                    [float(r["station_lat"]), float(r["station_lon"])],
+                    [float(r["borough_lat"]), float(r["borough_lon"])]
+                ],
+                color=c, weight=w, opacity=0.35,
+                tooltip=folium.Tooltip(tip, sticky=True),
+            ).add_to(flow_layer)
+
+        folium.LayerControl(collapsed=True).add_to(m_stations)
+    else:
+        st.info("No flow lines available for the current filters.")
+
+# Render map
+st_folium(m_stations, use_container_width=True, height=650)
+
+# -----------------------------
+
+st.markdown(
+    f"<div style='margin-top:-10px; margin-bottom:8px; color:#6b7280; font-size:0.85rem;'>"
+    f"Data shown: {period_label}"
+    f"</div>",
+    unsafe_allow_html=True
+)
+
+# -----------------------------
+# Map explanation expander
+# -----------------------------
+with st.expander("How to read the map"):
+    st.markdown("""
+Each circle represents one fire station. Circle size reflects the number of incidents responded to,
+while colour indicates the selected metric.
+
+Hover over a station to view its name, incident count, median travel time and home share.
+
+**Home share** represents the proportion of incidents a station attended within its own ground.
+Lower values indicate frequent cross-borough deployment, which typically results in longer travel times.
+
+Enable **station → borough flows** to visualise deployment patterns. Lines connect stations to the
+boroughs they serve, with line width scaled by incident volume.
+""")
+
+# -----------------------------
+# Dynamic map insight
+# -----------------------------
+if not stations_map.empty:
+    busiest    = stations_map.loc[stations_map["incidents"].idxmax()]
+    slowest    = stations_map.loc[stations_map["median_travel_min"].idxmax()]
+    lowest_home = stations_map.loc[stations_map["home_share"].idxmin()]
+
+    avg_home_share = stations_map["home_share"].mean() * 100
+    avg_travel     = stations_map["median_travel_min"].mean()
+
+    travel_diff_pct = (
+        (med_travel_away_kpi - med_travel_home_kpi) / med_travel_home_kpi * 100
+        if med_travel_home_kpi > 0 else 0
+    )
+
+    st.markdown(f"""
+**Map Insight ({period_label})**
+
+- The busiest station is **{busiest['station_name']}** with **{int(busiest['incidents']):,} incidents**.
+- The station with the longest median travel time is **{slowest['station_name']}** 
+  at **{slowest['median_travel_min']:.2f} minutes**.
+- **{lowest_home['station_name']}** has the lowest home share at 
+  **{lowest_home['home_share']*100:.1f}%**, indicating frequent cross-borough deployment.
+- Median travel time increases from **{med_travel_home_kpi:.2f} min** for home deployments to 
+  **{med_travel_away_kpi:.2f} min** for cross-borough responses, a **{travel_diff_pct:+.0f}%** 
+  difference, indicating longer distances when stations respond outside their home ground.
+""")
+
+# ------------------------------------------------------------
+st.header("3. How does Hour of Day influence Response Time?")
 
 st.markdown("""Hourly response time patterns are analysed to assess whether
             turnout or travel time drives performance fluctuations throughout the day.
             """)
 
 st.subheader("Turnout vs Travel Time by Hour of Day")
+
+st.markdown(
+    f"<div style='margin-top:-10px; margin-bottom:8px; color:#6b7280; font-size:0.85rem;'>"
+    f"Data shown: {period_label}"
+    f"</div>",
+    unsafe_allow_html=True
+)
 
 hourly_components = (
     filtered_incidents
@@ -488,7 +934,7 @@ else:
 range_ratio = round(dominant_range / other_range, 1) if other_range > 0 else 0
 
 st.markdown(f"""
-**Key Insight ({period_label})**
+**Key Insights ({period_label})**
 
 - **{dominant} time** shows greater hourly variation, fluctuating by 
   **{dominant_range:.2f} minutes** across the day and peaking around **{peak_hour}:00**.
@@ -504,17 +950,21 @@ st.markdown(f"""
 st.markdown("---")
 # ---------------------------------------------------------------------
 
-# ---------------------------------------------------------------------
-
-
-st.header("3. Why Do Incidents Exceed the 6-Minute Target?")
+st.header("4. Why Do Incidents Exceed the 6-Minute Target?")
 
 st.markdown("""Delay codes for incidents exceeding the 6-minute response target are analysed
 to distinguish routine travel constraints from exceptional delays.
 """)
 # ---------------------------------------------------------------------
 
-st.subheader("3.1 Breakdown of Recorded Delay Factors")
+st.subheader("Breakdown of Recorded Delay Factors")
+
+st.markdown(
+    f"<div style='margin-top:-10px; margin-bottom:8px; color:#6b7280; font-size:0.85rem;'>"
+    f"Data shown: {period_label}"
+    f"</div>",
+    unsafe_allow_html=True
+)
 
 # Filter incidents exceeding 6-minute target
 delayed_df = filtered_incidents[
@@ -529,15 +979,19 @@ delayed_df = delayed_df[
 # Count delay codes
 delay_counts = (
     delayed_df
-    .groupby("DelayCode_Description")
+    .groupby("DelayCode_Description", observed=True)
     .size()
     .reset_index(name="IncidentCount")
     .sort_values("IncidentCount", ascending=False)
 )
 
-delay_counts["DelayCode_Description"] = delay_counts["DelayCode_Description"].replace(
-    {"No delay": "No recorded delay code"}
-)
+# Rename category to avoid CategoricalDtype replace warning
+if "No delay" in delay_counts["DelayCode_Description"].values:
+    delay_counts["DelayCode_Description"] = (
+        delay_counts["DelayCode_Description"]
+        .astype(str)
+        .replace({"No delay": "No recorded delay code"})
+    )
 
 
 total_exceedances = delay_counts["IncidentCount"].sum()
@@ -640,15 +1094,11 @@ else:
 top_driver = top_delay.iloc[0]
 
 st.markdown(f"""
-
-**Key Insights**
-
 - A substantial share of exceedances (**{not_held_up_percent:.1f}%**) are recorded without
   a specific delay factor ("Not held up"), indicating that most exceedances occur under normal
   operating conditions rather than being driven by exceptional operational delays.
 - The remaining delay factors collectively account for approximately **{others_percent:.1f}%**,
   indicating a moderate long-tail distribution of operational causes.
-
 """
 )
 
@@ -672,195 +1122,23 @@ with st.expander("Show delay codes included in 'Other Delay Codes'"):
             )
 
 # ---------------------------------------------------------------------
+
+# ---------------------------------------------------------------------
 st.markdown("---")
 # ---------------------------------------------------------------------
-
-# ------------------------------------------------------------
-st.subheader("3.2 Geographic Distribution of “Not held up” Exceedances?")
 
 st.markdown(
-    "To examine whether delay reasons vary by location, the map below shows "
-    "the distribution of exceedances classified as “Not held up” across boroughs."
-    )
-
-# Exceedances with recorded delay
-
-exceed_df = filtered_incidents[
-    (filtered_incidents["FirstPumpArriving_AttendanceTime"] > 360) &
-    (filtered_incidents["DelayCode_Description"].notna())
-].copy()
-
-#  Not held up exeedances
-exceed_df["IsNotHeldUp"] = (
-    exceed_df["DelayCode_Description"] == "Not held up"
+  "<div style='margin-top:12px; padding-left:12px; border-left:3px solid #e5e7eb; "
+  "color:#4b5563; font-size:0.95rem;'>"
+  "<strong>In summary:</strong> Variation in response performance is primarily explained by travel dynamics: Travel time accounts for "
+  "most of median attendance time and increases for cross-borough deployments. While most 6-minute exceedances carry no specific delay code, "
+  "suggesting routine operational conditions rather than exceptional disruptions."
+  "</div>",
+  unsafe_allow_html=True
 )
-
-# Borough-level aggregation
-borough_notheld = (
-    exceed_df
-    .groupby("IncGeo_BoroughName", as_index=False)
-    .agg(
-        Exceedances=("IncidentNumber", "size"),
-        NotHeldUp_Count=("IsNotHeldUp", "sum"),
-        NotHeldUp_Rate=("IsNotHeldUp", "mean")
-    )
-)
-
-borough_notheld["NotHeldUp_Rate"] *= 100
-
-
-# create NAME_clean for merge 
-borough_notheld["NAME_clean"] = (
-    borough_notheld["IncGeo_BoroughName"]
-    .astype(str)
-    .str.strip()
-    .str.upper()
-)
-
-# Clean borough names for merging
-boroughs["NAME_clean"] = (
-    boroughs["NAME"]
-    .str.strip()
-    .str.upper()
-)
-
-# Merge into GeoDataframe
-
-# Remove previous merge columns (in case of reruns)
-boroughs = boroughs.drop(
-    columns=["Exceedances", "NotHeldUp_Count", "NotHeldUp_Rate"],
-    errors="ignore"
-)
-
-boroughs = boroughs.merge(
-    borough_notheld[
-        ["NAME_clean", "Exceedances", "NotHeldUp_Count", "NotHeldUp_Rate"]
-    ],
-    on="NAME_clean",
-    how="left"
-)
-
-# Clean missing values
-boroughs["Exceedances"] = boroughs["Exceedances"].fillna(0).astype(int)
-boroughs["NotHeldUp_Count"] = boroughs["NotHeldUp_Count"].fillna(0).astype(int)
-boroughs["NotHeldUp_Rate"] = boroughs["NotHeldUp_Rate"].fillna(0).round(1)
-
-# Tooltip display
-boroughs["NotHeldUp_Rate_display"] = (
-    boroughs["NotHeldUp_Rate"].astype(str) + "%"
-)
-
-# Map
-
-metric = st.radio(
-    "Map metric",
-    ["Not held up count", "Not held up rate (%)"],
-    horizontal=True
-)
-
-m = folium.Map(
-    location=[51.5074, -0.1278],
-    zoom_start=10,
-    min_zoom=10,
-    max_zoom=10,
-    zoom_control=False,
-    scrollWheelZoom=False,
-    dragging=False,
-    doubleClickZoom=False,
-    touchZoom=False
-)
-
-if metric == "Not held up count":
-    value_col = "NotHeldUp_Count"
-    legend_name = "Not held up (count)"
-    fill_color = "Blues"
-    tooltip_fields = ["NAME", "NotHeldUp_Count", "Exceedances"]
-    tooltip_aliases = ["Borough:", "Not held up:", "Total exceedances:"]
-
-else:
-    value_col = "NotHeldUp_Rate"
-    legend_name = "Not held up (% of exceedances)"
-    fill_color = "YlOrRd"
-    tooltip_fields = ["NAME", "NotHeldUp_Rate_display", "Exceedances"]
-    tooltip_aliases = ["Borough:", "Not held up rate:", "Total exceedances:"]
-
-folium.Choropleth(
-    geo_data=boroughs,
-    data=boroughs,
-    columns=["NAME", value_col],
-    key_on="feature.properties.NAME",
-    fill_color=fill_color,
-    fill_opacity=0.7,
-    line_opacity=0.2,
-    legend_name=legend_name
-).add_to(m)
-
-folium.GeoJson(
-    boroughs,
-    style_function=lambda x: {"fillOpacity": 0, "color": "black", "weight": 0.5},
-    tooltip=folium.GeoJsonTooltip(
-        fields=tooltip_fields,
-        aliases=tooltip_aliases,
-        localize=True
-    )
-).add_to(m)
-
-st_folium(m, use_container_width=True, height=600)
-
-# Map insight
-
-if metric == "Not held up count":
-
-    top_row = borough_notheld.sort_values(
-        "NotHeldUp_Count", ascending=False
-    ).head(1)
-
-    if not top_row.empty:
-        st.markdown(f"""
-            **Map Insight**
-            - The highest number of “Not held up” exceedances is in 
-             **{top_row.iloc[0]['IncGeo_BoroughName']}** 
-             ({int(top_row.iloc[0]['NotHeldUp_Count']):,} incidents).
-            - This concentration in larger outer boroughs confirms that borogh size
-             is a major factor contributing to 6-minute target exceedances.
-        """)
-
-else:  # Not held up rate (%)
-
-    top_row = borough_notheld.sort_values(
-        "NotHeldUp_Rate", ascending=False
-    ).head(1)
-
-    if not top_row.empty:
-        st.markdown(f"""
-            -**Map Insight:** The highest percentage of exceedances recorded as “Not held up” 
-            is in **{top_row.iloc[0]['IncGeo_BoroughName']}** 
-            ({top_row.iloc[0]['NotHeldUp_Rate']:.1f}% of exceedances).
-            -Higher proportions in several larger outer boroughs align with the relationship between
-            borough size, travel distance, and response performance identified earlier.
-        """)
 
 # ---------------------------------------------------------------------
-st.markdown("---")
-# ---------------------------------------------------------------------
-### Key Takeaways:
-
-
-st.markdown(f"""
-### Key Takeaways
-
-- Travel time accounts for **{travel_share_pct:.0f}%** of median response time,
-  confirming it as the primary driver of geographic and hourly variation.
-- Turnout time remains stable across boroughs (IQR: {turnout_iqr_sec:.0f} s),
-  while travel time varies considerably (IQR: {travel_iqr_sec:.0f} s).
-- **{not_held_up_percent:.1f}%** of 6-minute exceedances have no recorded delay reason,
-  suggesting structural rather than operational causes.
-""")
-
-
-
-
 st.markdown("---")
 st.caption(
-    "London Fire Brigade Response Time & Operational Performance Analysis (2021-2025) · Andrés Lill · February 2026"
+    "London Fire Brigade Response Time Analysis (2021–2025) · Andrés Lill · February 2026"
 )

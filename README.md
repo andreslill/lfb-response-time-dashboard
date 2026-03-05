@@ -1,7 +1,12 @@
-# London Fire Brigade — Incident & Response Time Analysis (2021–2025)
+# London Fire Brigade Response Time Analysis (2021–2025)
 
-A multi-page interactive dashboard analysing London Fire Brigade (LFB) incident and mobilisation data between 2021 and 2025.
-Response performance is assessed across London to understand the drivers of variation in response times.
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-red)
+![Data](https://img.shields.io/badge/Data-London%20Fire%20Brigade-orange)
+
+An interactive dashboard analysing operational response performance across London.
+
+**Key insight:** Borough area drives most variation in response performance through travel time. Turnout time remains nearly constant across all stations.
 
 🔗 **[Live Dashboard →](https://lfb-response-time-dashboard-cqk7jfyroyw9dfkfbcj9w5.streamlit.app/)**
 
@@ -13,12 +18,26 @@ The London Fire Brigade operates against two official performance benchmarks for
 - First pump arriving within **6 minutes**
 - 90% of first pumps arriving within **10 minutes**
 
-A separate 8-minute target exists for the second appliance. However, with the second pump deployed in only 36% of incidents, reflected in a 64% missing value rate for SecondPumpArriving_AttendanceTime,  it does not provide a consistent basis for cross-incident comparison and was therefore excluded from this analysis.
+A separate 8-minute target exists for the second appliance. However, with the second pump deployed in only 36% of incidents, reflected in a 64% missing value rate for second pump attendance times. It therefore does not provide a consistent basis for cross-incident comparison and was excluded from this analysis.
 
 Adherence to first appliance targets is examined across time periods, incident types, and geographies, alongside the structural factors driving variation in response performance.
 
-**Core finding:** Geography is the dominant driver of performance variation. Borough size alone explains 59% of the variation in median response time and 62% of the variation in 6-minute compliance. Travel time accounts for approximately 77% of total response time, while turnout time remains remarkably stable across all boroughs (IQR: just 4 seconds).
+**Core finding:** Geography is the main driver of performance variation. Borough area explains 59% of the variation in median response time and 62% of the variation in 6-minute compliance. Travel time accounts for approximately 77% of total response time, while turnout time remains remarkably stable across all boroughs (IQR: just 4 seconds).
 
+---
+## Dashboard Preview
+
+### Station Coverage and Deployment Patterns
+
+![Station Coverage Map](docs/station_coverage_map.png)
+
+*Fire station coverage across London. *Fire station coverage across London. Circle size represents the number of incidents attended by each station and colour indicates median travel time. Tooltip shows station-level deployment metrics.*
+
+### Response Time Distribution
+
+![Response Time Distribution](docs/response_time_distribution.png)
+
+*Distribution of first-pump response times across incidents. Vertical lines indicate the median, mean, 90th percentile, and the official 6-minute response target.*
 ---
 
 ## Dashboard Pages
@@ -43,7 +62,7 @@ All pages update dynamically based on sidebar filters (Year, Month, Incident Typ
 - **6-minute compliance: 69.5%** — roughly 1 in 3 incidents exceeds the primary target
 - **Borough range:** 4.22 min (Kensington & Chelsea) to 6.02 min (Hillingdon) — a gap of 1.80 minutes
 - **Travel time** accounts for ~77% of total response time; turnout time is highly consistent (IQR: 4 s)
-- **Borough size** explains 59% of response time variation and 62% of compliance variation (r = −0.79)
+- **Borough area** explains 59% of response time variation and 62% of compliance variation (r = −0.79)
 - **61.6% of all target exceedances** are recorded as "Not held up" — no specific operational cause
 
 ---
@@ -56,16 +75,25 @@ All pages update dynamically based on sidebar filters (Year, Month, Incident Typ
 - **Matplotlib / Seaborn** — static visualisations
 - **Plotly** — interactive choropleth maps
 - **GeoPandas / Folium** — geographic boundary data and mapping
-- **SciPy** — statistical testing (ANOVA, correlation)
+- **SciPy** — statistical testing (correlation analysis)
+- **statsmodels** — OLS regression and statistical modelling
 
-Data is stored in compressed **Parquet (Snappy)** format for performance optimisation.
+## Data Pipeline
+
+The analysis pipeline consists of three stages:
+
+1. **Data ingestion** – London Fire Brigade incident and mobilisation datasets are downloaded from the London Datastore.
+2. **Data preparation** – datasets are cleaned, joined, and filtered to incidents between 2021–2025. Mobilisation records are aggregated to incident level using the first pump arrival.
+3. **Spatial enrichment** – station coordinates are joined with borough boundaries to analyse station coverage and cross-borough deployments.
+
+Processed datasets are exported to compressed **Parquet (Snappy)** format for fast loading in the Streamlit dashboard.
 
 ---
 
 ## Project Structure
 
 ```
-lfb-streamlit-app/
+lfb-response-time-dashboard/
 │
 ├── Introduction.py                         # Entry point
 ├── data_loader.py                          # Cached data loading and preprocessing
@@ -99,7 +127,7 @@ streamlit run Introduction.py
 
 ---
 
-## Data Source
+## Data Sources
 
 Two publicly available datasets from the London Fire Brigade, accessed via the London Datastore were used.
 
@@ -107,6 +135,22 @@ Two publicly available datasets from the London Fire Brigade, accessed via the L
 - **LFB Mobilisation Records** — [data.london.gov.uk](https://data.london.gov.uk/dataset/london-fire-brigade-mobilisation-records)
 
 Geographic boundary data (GIS borough boundaries) was sourced from the [London Datastore Statistical GIS Boundary Files](https://data.london.gov.uk/dataset/statistical-gis-boundary-files-for-london-20od9/).
+
+### Fire station locations (station coverage map)
+
+Station coordinates were sourced from the Open Data Institute (ODI) Fire and Rescue Analysis repository:
+
+- Repository: https://github.com/theodi/FNR_Analysis  
+- File used: https://raw.githubusercontent.com/theodi/FNR_Analysis/refs/heads/master/data/preprocessed/stations.csv  
+- ODI project context (station closure impact tool): https://theodi.org/project/tools-developing-tools-to-assess-the-impact-of-fire-station-closures/
+
+The ODI station list reflects the pre-2014 London Fire Brigade station network. In January 2014, ten stations were closed as part of the Fifth London Safety Plan, reducing the total number of stations from 112 to 102.
+
+The ODI file contains 113 station entries, which differs slightly from commonly reported counts (e.g., 112). This discrepancy likely reflects differences in how specialist or non-standard units (e.g., river/support stations) are represented in station inventories.
+
+For this project, station coordinates are used for **spatial visualisation** only. Operational metrics are derived from the London Fire Brigade incident and mobilisation datasets and are calculated on the filtered 2021–2025 subset after joining the raw annual files.
+
+Station coverage metrics were generated via `analysis/prepare_station_coverage.py`, which links station coordinates to borough boundaries and aggregates station deployment patterns from the filtered incident data.
 
 The full data preprocessing and exploratory analysis pipeline is documented in [`analysis/London_Fire_Brigade_Analysis.ipynb`](analysis/London_Fire_Brigade_Analysis.ipynb).
 

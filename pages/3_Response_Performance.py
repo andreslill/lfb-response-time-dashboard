@@ -104,8 +104,6 @@ elif selected_year == "All" and selected_month != "All":
 else:
     period_label = f"{selected_month} {selected_year}"
 
-st.caption(f"Data shown: {period_label}")
-
 # ---------------------------------------------------------------------
 # Convert filtered_df(mobilisation level) to incident level (first pump only)
 
@@ -145,6 +143,13 @@ compliance_rate = (filtered_incidents["FirstPump_Within_6min"].mean() * 100)
 # Stacked Barplot
 
 st.subheader("Distribution of Response Times")
+
+st.markdown(
+    f"<div style='margin-top:-10px; margin-bottom:8px; color:#6b7280; font-size:0.85rem;'>"
+    f"Data shown: {period_label}"
+    f"</div>",
+    unsafe_allow_html=True
+)
 
 st.markdown("<br>", unsafe_allow_html=True) # space
 
@@ -299,6 +304,38 @@ st.markdown("---")
 
 st.subheader("Seasonal Patterns in Response Times")
 
+# Seasonal Patterns chart uses year filter only
+# month filter would collapse data to a single point
+if selected_year == "All":
+    trend_df = df.copy()
+else:
+    trend_df = df[df["Year"] == selected_year]
+
+trend_incidents = (
+    trend_df
+    .sort_values("PumpOrder")
+    .drop_duplicates("IncidentNumber")
+    .copy()
+)
+
+# Trend period label — year only
+if selected_year == "All":
+    trend_period_label = f"{min_year}–{max_year}"
+else:
+    trend_period_label = str(selected_year)
+
+st.markdown(
+    f"""
+    <div style='margin-top:-10px; margin-bottom:2px; color:#6b7280; font-size:0.85rem;'>
+      Data shown: {trend_period_label}
+    </div>
+    <div style='margin-top:0px; margin-bottom:10px; color:#9ca3af; font-size:0.8rem;'>
+      Note: Seasonal Patterns reflect the full year and are not affected by the month filter.
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
 st.markdown("<br>", unsafe_allow_html=True) # space
 
 # legend
@@ -311,7 +348,7 @@ col4.markdown("<span style='color:#ff7f0e;'>●</span> Fire", unsafe_allow_html=
 
 
 median_firstpump_attendance_by_type = (
-    filtered_incidents
+    trend_incidents
     .groupby(["Month", "MonthName", "IncidentGroup"])["FirstPumpArriving_AttendanceTime"]
     .median()
     .div(60)
@@ -319,7 +356,7 @@ median_firstpump_attendance_by_type = (
 )
 
 median_firstpump_attendance_total = (
-    filtered_incidents
+    trend_incidents
     .groupby(["Month", "MonthName"])["FirstPumpArriving_AttendanceTime"]
     .median()
     .div(60)
@@ -461,6 +498,15 @@ st.markdown("---")
 
 st.subheader("Response Times by Hour of Day")
 
+st.markdown(
+    f"<div style='margin-top:-10px; margin-bottom:8px; color:#6b7280; font-size:0.85rem;'>"
+    f"Data shown: {period_label}"
+    f"</div>",
+    unsafe_allow_html=True
+)
+
+st.markdown("<br>", unsafe_allow_html=True) # space
+
 # calculate Attendence time in minutes
 df_hour = filtered_incidents.copy()
 
@@ -540,22 +586,15 @@ st.markdown(
 # ---------------------------------------------------------------------
 st.markdown("---")
 # ---------------------------------------------------------------------
-# Key Takeaways
 
-
-st.markdown(f"""
-### Key Takeaways
-
-- Response performance is stable across months and hours, showing only limited fluctuations over time.
-- False Alarm incidents show the fastest response times, reflecting lower operational complexity.
-- Differences across incident types reflect operational challenges, with Special Service consistently
-  recording longer response times
-- The 6-minute response target is met in {compliance_rate:.1f}% of incidents, demonstrating consistent response performance.
-- {compliance_rate:.1f}% of incidents are within the 6-minute window. 
-  The remaining {100 - compliance_rate:.1f}% point to structural issues 
-  rather than seasonal or hourly effects..
-""")
-
+st.markdown(
+  "<div style='margin-top:12px; padding-left:12px; border-left:3px solid #e5e7eb; "
+  "color:#4b5563; font-size:0.95rem;'>"
+  "<strong>In summary:</strong> Performance is broadly stable across months and hours; differences are more pronounced "
+  "between incident types than across time."
+  "</div>",
+  unsafe_allow_html=True
+)
 
 # ---------------------------------------------------------------------
 st.markdown("---")
@@ -563,6 +602,17 @@ st.markdown("---")
 # Boxplot
 
 with st.expander("Show detailed response time distribution (Boxplot)"):
+
+    st.subheader("Distribution of Response Times")
+
+    st.markdown(
+        f"<div style='margin-top:-10px; margin-bottom:8px; color:#6b7280; font-size:0.85rem;'>"
+        f"Data shown: {period_label}"
+        f"</div>",
+        unsafe_allow_html=True
+    )
+
+    st.markdown("<br>", unsafe_allow_html=True) # space
 
     st.subheader("First Pump Attendance Time Distribution")
 
@@ -651,6 +701,5 @@ with st.expander("Show detailed response time distribution (Boxplot)"):
 
 st.markdown("---")
 st.caption(
-    "London Fire Brigade Response Time & Operational Performance Analysis (2021-2025) · Andrés Lill · February 2026"
+    "London Fire Brigade Response Time Analysis (2021–2025) · Andrés Lill · February 2026"
 )
-

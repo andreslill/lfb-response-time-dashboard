@@ -114,7 +114,7 @@ if selected_year == "All" and selected_month == "All":
    period_label = f"{min_year}–{max_year}"
 
 elif selected_year != "All" and selected_month == "All":
-     period_label = f"{selected_year}, January–December"
+     period_label = f"{selected_year}"
 
 elif selected_year == "All" and selected_month != "All":
      period_label = f"{selected_month} months between {min_year} and {max_year}"
@@ -128,8 +128,6 @@ if selected_incident == "All":
 else:
     incident_label = f"{selected_incident} Incidents"
     
-
-st.caption(f"Data shown: {period_label}, {incident_label} ")
 # ---------------------------------------------------------------------
 # Convert filtered_df(mobilisation level) to incident level (first pump only)
 
@@ -165,6 +163,18 @@ st.markdown("---")
 
 st.subheader("Distribution of Response Time")
 
+st.markdown(
+    f"""
+    <div style='margin-top:-10px; margin-bottom:2px; color:#6b7280; font-size:0.85rem;'>
+      Data shown: {period_label}, {incident_label}
+    </div>
+    <div style='margin-top:0px; margin-bottom:10px; color:#9ca3af; font-size:0.8rem;'>
+      Note: X-axis capped at 15 minutes for readability. 0.5% of incidents exceed this threshold.
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
 response_minutes = filtered_incidents["FirstPumpArriving_AttendanceTime"] / 60
 
 pct_above_15 = (response_minutes > 15).mean() * 100
@@ -173,7 +183,7 @@ median = response_minutes.median()
 mean = response_minutes.mean()
 p90 = response_minutes.quantile(0.90)
 
-fig, ax = plt.subplots(figsize=(FIG_WIDTH, FIG_HEIGHT_MEDIUM))
+fig, ax = plt.subplots(figsize=(FIG_WIDTH, FIG_HEIGHT_SMALL))
 
 sns.histplot(
     response_minutes,
@@ -190,7 +200,6 @@ ax.axvline(mean, color="blue", linestyle="--", label=f"Mean ({mean:.2f})")
 ax.axvline(p90, color="purple", linestyle=":", label=f"P90 ({p90:.2f})")
 
 ax.set_xlim(0, 15)
-st.caption(f"Note: X-axis capped at 15 minutes for readability. {pct_above_15:.1f}% of incidents exceed this threshold.")
 
 ax.set_xlabel("Attendance Time (minutes)")
 ax.set_ylabel("Share of Incidents (%)")  
@@ -212,7 +221,8 @@ skewness = round(response_minutes.skew(), 2)
 mean_median_gap = round(mean - median, 2)
 
 st.markdown(f"""
-- Across {period_label} ({incident_label.lower()}), the 6-minute target is met in
+
+- The 6-minute target is met in
   **{response_within_6min:.1f}%** of incidents, meaning **{above_target:.1f}%** exceed it.
 - The mean ({mean:.2f} min) is **{mean_median_gap:.2f} min above the median ({median:.2f} min)**.
 - Extreme delays above 10 minutes affect **{extreme_delay_rate:.1f}%** of incidents
@@ -221,5 +231,6 @@ st.markdown(f"""
 
 st.markdown("---")
 st.caption(
-    "London Fire Brigade Response Time & Operational Performance Analysis (2021-2025) · Andrés Lill · February 2026"
+    "London Fire Brigade Response Time Analysis (2021–2025) · Andrés Lill · February 2026"
 )
+

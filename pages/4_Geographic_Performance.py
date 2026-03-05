@@ -131,7 +131,7 @@ if selected_year == "All" and selected_month == "All":
     period_label = f"{min_year}–{max_year}"
 
 elif selected_year != "All" and selected_month == "All":
-    period_label = f"{selected_year}, January–December"
+    period_label = f"{selected_year}"
 
 elif selected_year == "All" and selected_month != "All":
     period_label = f"{selected_month} months between {min_year} and {max_year}"
@@ -145,9 +145,6 @@ if selected_incident == "All":
 else:
     incident_label = f"{selected_incident} Incidents"
     
-
-st.caption(f"Data shown: {period_label}, {incident_label} ")
-
 # ---------------------------------------------------------------------
 # Convert filtered_df(mobilisation level) to incident level (first pump only)
 
@@ -260,6 +257,12 @@ outer_df = borough_df[borough_df["AreaType"] == "Outer London"]
 # Barplot
 st.subheader("Median Response Time: Inner vs. Outer London")
 
+st.markdown(
+    f"<div style='margin-top:-10px; margin-bottom:8px; color:#6b7280; font-size:0.85rem;'>"
+    f"Data shown: {period_label}, {incident_label}"
+    f"</div>",
+    unsafe_allow_html=True
+)
 
 # Prepare Inner vs Outer dataframe
 inner_outer_df = (
@@ -352,9 +355,6 @@ else:
     gap_text = f"{difference_seconds:.0f} seconds"
 
 st.markdown(f"""
-
-**Key Insights**
-
 - Outer London has a higher median response time **({outer_value:.2f} min)** 
   than Inner London **({inner_value:.2f} min)**.
 - The gap of **{gap_text} ({percent_difference:.1f}% difference)**  highlights how borough density and travel distance directly affect response performance.
@@ -690,13 +690,19 @@ slowest_is_outer = slowest_map_borough in outer_boroughs
 lowest_comp_is_outer = lowest_comp_map_borough in outer_boroughs
 
 # ---------------------------------------------------
+
+st.markdown(
+    f"<div style='margin-top:-10px; margin-bottom:8px; color:#6b7280; font-size:0.85rem;'>"
+    f"Data shown: {period_label}, {incident_label}"
+    f"</div>",
+    unsafe_allow_html=True
+)
+# ---------------------------------------------------
 # Dynamic Map Insights
 # Correct insight based on selected metric
 
 if metric_choice == "Incident Volume":
     st.markdown(f"""
-**Map Insight**
-
 - Incident demand is most concentrated in **{highest_volume_borough}**
   ({highest_volume_val:,} incidents).
 - **{lowest_volume_borough}** records the lowest incident volume
@@ -715,8 +721,6 @@ elif metric_choice == "Median Response Time":
         else "suggesting a complex interaction between geography and other operational factors."
     )
     st.markdown(f"""
-**Map Insight**
-
 - Median response times vary across boroughs, ranging from
   **{fastest_map_val:.2f} min ({fastest_map_borough})**
   to **{slowest_map_val:.2f} min ({slowest_map_borough})**
@@ -738,8 +742,6 @@ elif metric_choice == "Response within 6 min (%)":
         else "suggesting additional factors beyond geographic size may be at play."
     )
     st.markdown(f"""
-**Map Insight**
-
 - 6-minute compliance rates range from
   **{highest_comp_map_val:.1f}% ({highest_comp_map_borough})**
   to **{lowest_comp_map_val:.1f}% ({lowest_comp_map_borough})**
@@ -761,6 +763,14 @@ the structural relationship between borough size and response performance.
 with st.expander("Show Response Time by Borough Ranking"):
 
     st.subheader("Borough Ranking: Median Response Time")
+    
+    st.markdown(
+    f"<div style='margin-top:-10px; margin-bottom:8px; color:#6b7280; font-size:0.85rem;'>"
+    f"Data shown: {period_label}, {incident_label}"
+    f"</div>",
+    unsafe_allow_html=True
+)
+
 
     # Median berechnen und sauber sortieren
     median_response_by_borough = (
@@ -829,7 +839,6 @@ with st.expander("Show Response Time by Borough Ranking"):
     )
 
     st.markdown(f"""
-    **Ranking Insight**
 
     - Fastest borough: **{top_fast['IncGeo_BoroughName']}**
       ({top_fast['MedianResponseMinutes']:.2f} min)
@@ -850,6 +859,13 @@ with st.expander("Show Response Time by Borough Ranking"):
 with st.expander("Show Response within 6 min Rate by Borough Ranking"):
 
     st.subheader("Borough Ranking: Response within 6 min (%)")
+    
+    st.markdown(
+    f"<div style='margin-top:-10px; margin-bottom:8px; color:#6b7280; font-size:0.85rem;'>"
+    f"Data shown: {period_label}, {incident_label}"
+    f"</div>",
+    unsafe_allow_html=True
+    )    
 
     ranking_df = borough_compliance.sort_values(
         "ComplianceRate",
@@ -883,8 +899,6 @@ with st.expander("Show Response within 6 min Rate by Borough Ranking"):
     gap = top_high["ComplianceRate"] - top_low["ComplianceRate"]
 
     st.markdown(f"""
-    **Ranking Insight**
-
     - Highest compliance: **{top_high['IncGeo_BoroughName']}** ({top_high['ComplianceRate']:.1f}%)
     - Lowest compliance: **{top_low['IncGeo_BoroughName']}** ({top_low['ComplianceRate']:.1f}%)
     - Compliance differs by up to **{gap:.1f} percentage points** across boroughs.
@@ -898,6 +912,13 @@ with st.expander("Show Response within 6 min Rate by Borough Ranking"):
 with st.expander("Incident Volume by Borough Ranking"):
 
     st.subheader("Borough Ranking: Incident Volume")
+
+    st.markdown(
+    f"<div style='margin-top:-10px; margin-bottom:8px; color:#6b7280; font-size:0.85rem;'>"
+    f"Data shown: {period_label}, {incident_label}"
+    f"</div>",
+    unsafe_allow_html=True
+    )    
 
     incident_volume_by_borough = (
         filtered_incidents
@@ -964,153 +985,47 @@ is analysed to assess whether geographic size acts as a driver of performance di
 
 st.subheader("3.1 Borough Size vs. Median Response Time by Area Type")
 
+st.markdown(
+    f"<div style='margin-top:-10px; margin-bottom:8px; color:#6b7280; font-size:0.85rem;'>"
+    f"Data shown: {period_label}, {incident_label}"
+    f"</div>",
+    unsafe_allow_html=True
+    )   
 
-# Linear Regression (Borough Area vs Median Response Time
+
+# Regression: All boroughs
 slope, intercept, r_value, p_value, std_err = linregress(
     borough_df["Area_km2"],
     borough_df["MedianResponseMinutes"]
 )
-
-# Statistical calculations
-r = r_value
-p = p_value
+r         = r_value
+p         = p_value
 r_squared = r_value ** 2
 r_squared_percent = r_squared * 100
 
-x_range = np.linspace(
-    borough_df["Area_km2"].min(),
-    borough_df["Area_km2"].max(),
-    100
-)
-
-y_range = slope * x_range + intercept
-
-
-
-# Within-group regression (Inner vs Outer London)
-_, _, r_inner_val, p_inner, _ = linregress(
+# Regression: Inner London only
+slope_inner, intercept_inner, r_inner_val, p_inner, _ = linregress(
     inner_df["Area_km2"],
     inner_df["MedianResponseMinutes"]
 )
 
-_, _, r_outer_val, p_outer, _ = linregress(
+# Regression: Outer London only
+slope_outer, intercept_outer, r_outer_val, p_outer, _ = linregress(
     outer_df["Area_km2"],
     outer_df["MedianResponseMinutes"]
 )
 
-
-
-# Colorblind-friendly palette
-inner_color = sns.color_palette("colorblind")[1]
-outer_color = sns.color_palette("colorblind")[2]
-
-
-
-# Create scatter plot
-fig = go.Figure()
-
-
-
-# Inner London scatter
-fig.add_trace(go.Scatter(
-    x=inner_df["Area_km2"],
-    y=inner_df["MedianResponseMinutes"],
-    mode="markers",
-    marker=dict(
-        size=12,
-        color="#1f77b4",
-        line=dict(width=1.2, color="black"),
-        opacity=0.85
-    ),
-    name="Inner London",
-    customdata=np.stack(
-        (
-            inner_df["NAME_clean"],
-            inner_df["Area_km2"],
-            inner_df["MedianResponseMinutes"],
-            inner_df["AreaType"]
-        ),
-        axis=-1
-    ),
-    hovertemplate=
-    "<b>%{customdata[0]}</b><br><br>" +
-    "Median Response Time: %{customdata[2]:.1f} min<br>" +
-    "Area: %{customdata[1]:.1f} km²<br>" +
-    "Area Type: %{customdata[3]}" +
-    "<extra></extra>"
-))
-
-
-
-# Outer London scatter
-fig.add_trace(go.Scatter(
-    x=outer_df["Area_km2"],
-    y=outer_df["MedianResponseMinutes"],
-    mode="markers",
-    marker=dict(
-        size=12,
-        color="#ff7f0e",
-        line=dict(width=1.2, color="black"),
-        opacity=0.85
-    ),
-    name="Outer London",
-    customdata=np.stack(
-        (
-            outer_df["NAME_clean"],
-            outer_df["Area_km2"],
-            outer_df["MedianResponseMinutes"],
-            outer_df["AreaType"]
-        ),
-        axis=-1
-    ),
-    hovertemplate=
-       "<b>%{customdata[0]}</b><br><br>" +
-       "Median Response Time: %{customdata[2]:.1f} min<br>" +
-       "Area: %{customdata[1]:.1f} km²<br>" +
-       "Area Type: %{customdata[3]}" +
-       "<extra></extra>"
-))
-
-# Regression line
-fig.add_trace(go.Scatter(
-    x=x_range,
-    y=y_range,
-    mode="lines",
-    line=dict(color="black", width=2),
-    showlegend=False   
-))
-
-# Layout
-fig.update_layout(
-    height=650,
-    xaxis_title="Borough Area (km²)",
-    yaxis_title="Median Response Time (minutes)",
-    template="simple_white",
-    legend_title_text="Area Type"
-)
-
-fig.update_xaxes(showgrid=False)
-fig.update_yaxes(showgrid=False)
-
-st.plotly_chart(fig, use_container_width=True)
-
-
-# Regression Summary Table 
+# ----------------------------------------------------------
+# Helper functions
 def format_p(p):
     return "< 0.001" if p < 0.001 else f"{p:.4f}"
 
-
 def interpret_strength(r):
     abs_r = abs(r)
-    if abs_r >= 0.7:
-        return "Strong"
-    elif abs_r >= 0.4:
-        return "Moderate"
-    elif abs_r >= 0.2:
-        return "Weak"
-    else:
-        return "Very weak"
-
+    if abs_r >= 0.7:   return "Strong"
+    elif abs_r >= 0.4: return "Moderate"
+    elif abs_r >= 0.2: return "Weak"
+    else:              return "Very weak"
 
 def significance_label(p):
     return "Yes" if p < 0.05 else "No"
@@ -1118,117 +1033,263 @@ def significance_label(p):
 def interpret_direction(r):
     return "Negative" if r < 0 else "Positive"
 
+# ----------------------------------------------------------
+# Radio filter
+area_view = st.radio(
+    "Show boroughs",
+    ["All (Inner + Outer)", "Inner London only", "Outer London only"],
+    horizontal=True,
+    key="area_view_31"
+)
 
-summary_table = pd.DataFrame({
-    "Group": [
-        "All Boroughs",
-        "Inner London",
-        "Outer London"
-    ],
-    "Correlation (r)": [
-        round(r, 2),
-        round(r_inner_val, 2),
-        round(r_outer_val, 2)
-    ],
-    "R²": [
-        round(r_squared, 2),
-        round(r_inner_val**2, 2),
-        round(r_outer_val**2, 2)
-    ],
-    "p-value": [
-        format_p(p),
-        format_p(p_inner),
-        format_p(p_outer)
-    ],
-    "Statistically Significant (α = 0.05)": [
-        significance_label(p),
-        significance_label(p_inner),
-        significance_label(p_outer)
-    ],
-    "Effect Strength": [
-        interpret_strength(r),
-        interpret_strength(r_inner_val),
-        interpret_strength(r_outer_val)
-    ]
-})
+# ----------------------------------------------------------
+# Compute regression line for selected view
+if area_view == "Inner London only":
+    plot_df          = inner_df.copy()
+    active_slope     = slope_inner
+    active_intercept = intercept_inner
+    active_r         = r_inner_val
+    active_p         = p_inner
+    active_label     = "Inner London"
+elif area_view == "Outer London only":
+    plot_df          = outer_df.copy()
+    active_slope     = slope_outer
+    active_intercept = intercept_outer
+    active_r         = r_outer_val
+    active_p         = p_outer
+    active_label     = "Outer London"
+else:
+    plot_df          = borough_df.copy()
+    active_slope     = slope
+    active_intercept = intercept
+    active_r         = r
+    active_p         = p
+    active_label     = "All Boroughs"
+
+active_r2    = active_r ** 2
+x_plot       = np.linspace(plot_df["Area_km2"].min(), plot_df["Area_km2"].max(), 100)
+y_plot       = active_slope * x_plot + active_intercept
+
+# ----------------------------------------------------------
+# Build Plotly figure
+fig = go.Figure()
+
+if area_view == "All (Inner + Outer)":
+
+    fig.add_trace(go.Scatter(
+        x=inner_df["Area_km2"],
+        y=inner_df["MedianResponseMinutes"],
+        mode="markers",
+        marker=dict(size=12, color="#1f77b4", line=dict(width=1.2, color="black"), opacity=0.85),
+        name="Inner London",
+        customdata=np.stack((inner_df["NAME_clean"], inner_df["Area_km2"],
+                             inner_df["MedianResponseMinutes"], inner_df["AreaType"]), axis=-1),
+        hovertemplate=(
+            "<b>%{customdata[0]}</b><br><br>"
+            "Median Response Time: %{customdata[2]:.1f} min<br>"
+            "Area: %{customdata[1]:.1f} km²<br>"
+            "Area Type: %{customdata[3]}<extra></extra>"
+        )
+    ))
+
+    fig.add_trace(go.Scatter(
+        x=outer_df["Area_km2"],
+        y=outer_df["MedianResponseMinutes"],
+        mode="markers",
+        marker=dict(size=12, color="#ff7f0e", line=dict(width=1.2, color="black"), opacity=0.85),
+        name="Outer London",
+        customdata=np.stack((outer_df["NAME_clean"], outer_df["Area_km2"],
+                             outer_df["MedianResponseMinutes"], outer_df["AreaType"]), axis=-1),
+        hovertemplate=(
+            "<b>%{customdata[0]}</b><br><br>"
+            "Median Response Time: %{customdata[2]:.1f} min<br>"
+            "Area: %{customdata[1]:.1f} km²<br>"
+            "Area Type: %{customdata[3]}<extra></extra>"
+        )
+    ))
+
+elif area_view == "Inner London only":
+
+    # Grey reference: Outer London
+    fig.add_trace(go.Scatter(
+        x=outer_df["Area_km2"],
+        y=outer_df["MedianResponseMinutes"],
+        mode="markers",
+        marker=dict(size=10, color="#aaaaaa", line=dict(width=0.8, color="#888888"), opacity=0.18),
+        name="Outer London (reference)",
+        hoverinfo="skip",
+        showlegend=True
+    ))
+
+    # Active: Inner London
+    fig.add_trace(go.Scatter(
+        x=inner_df["Area_km2"],
+        y=inner_df["MedianResponseMinutes"],
+        mode="markers",
+        marker=dict(size=12, color="#1f77b4", line=dict(width=1.2, color="black"), opacity=0.85),
+        name="Inner London",
+        customdata=np.stack((inner_df["NAME_clean"], inner_df["Area_km2"],
+                             inner_df["MedianResponseMinutes"], inner_df["AreaType"]), axis=-1),
+        hovertemplate=(
+            "<b>%{customdata[0]}</b><br><br>"
+            "Median Response Time: %{customdata[2]:.1f} min<br>"
+            "Area: %{customdata[1]:.1f} km²<br>"
+            "Area Type: %{customdata[3]}<extra></extra>"
+        )
+    ))
+
+else:  # Outer London only
+
+    # Grey reference: Inner London
+    fig.add_trace(go.Scatter(
+        x=inner_df["Area_km2"],
+        y=inner_df["MedianResponseMinutes"],
+        mode="markers",
+        marker=dict(size=10, color="#aaaaaa", line=dict(width=0.8, color="#888888"), opacity=0.18),
+        name="Inner London (reference)",
+        hoverinfo="skip",
+        showlegend=True
+    ))
+
+    # Active: Outer London
+    fig.add_trace(go.Scatter(
+        x=outer_df["Area_km2"],
+        y=outer_df["MedianResponseMinutes"],
+        mode="markers",
+        marker=dict(size=12, color="#ff7f0e", line=dict(width=1.2, color="black"), opacity=0.85),
+        name="Outer London",
+        customdata=np.stack((outer_df["NAME_clean"], outer_df["Area_km2"],
+                             outer_df["MedianResponseMinutes"], outer_df["AreaType"]), axis=-1),
+        hovertemplate=(
+            "<b>%{customdata[0]}</b><br><br>"
+            "Median Response Time: %{customdata[2]:.1f} min<br>"
+            "Area: %{customdata[1]:.1f} km²<br>"
+            "Area Type: %{customdata[3]}<extra></extra>"
+        )
+    ))
+
+# Regression line (always for active group)
+fig.add_trace(go.Scatter(
+    x=x_plot, y=y_plot,
+    mode="lines",
+    line=dict(color="black", width=2),
+    showlegend=False
+))
+
+fig.update_layout(
+    height=650,
+    xaxis_title="Borough Area (km²)",
+    yaxis_title="Median Response Time (minutes)",
+    template="simple_white",
+    legend_title_text="Area Type"
+)
+fig.update_xaxes(showgrid=False)
+fig.update_yaxes(showgrid=False)
+
+st.plotly_chart(fig, use_container_width=True)
+
+# ----------------------------------------------------------
+# Regression Summary Expander — dynamic based on area_view
 
 with st.expander("Show Regression Summary (Statistical Details)"):
 
-    col1, col2, col3 = st.columns(3)
+    if area_view == "All (Inner + Outer)":
+        col1, col2, col3 = st.columns(3)
 
+        with col1:
+            st.markdown("### All Boroughs")
+            st.metric("Correlation (r)", f"{r:.2f}")
+            st.metric("R²", f"{r_squared:.2f}")
+            st.metric("p-value", format_p(p))
+            st.metric("Statistically Significant", significance_label(p))
+            st.metric("Effect Strength", interpret_strength(r))
+            st.metric("Effect Direction", interpret_direction(r))
 
-    # All Boroughs
-    with col1:
-        st.markdown("### All Boroughs")
-        st.metric("Correlation (r)", f"{r:.2f}")
-        st.metric("R²", f"{r_squared:.2f}")
-        st.metric("p-value", format_p(p))
-        st.metric("Statistically Significant", significance_label(p))
-        st.metric("Effect Strength", interpret_strength(r))
-        st.metric("Effect Direction", interpret_direction(r))
+        with col2:
+            st.markdown("### Inner London")
+            st.metric("Correlation (r)", f"{r_inner_val:.2f}")
+            st.metric("R²", f"{r_inner_val**2:.2f}")
+            st.metric("p-value", format_p(p_inner))
+            st.metric("Statistically Significant", significance_label(p_inner))
+            st.metric("Effect Strength", interpret_strength(r_inner_val))
+            st.metric("Effect Direction", interpret_direction(r_inner_val))
 
+        with col3:
+            st.markdown("### Outer London")
+            st.metric("Correlation (r)", f"{r_outer_val:.2f}")
+            st.metric("R²", f"{r_outer_val**2:.2f}")
+            st.metric("p-value", format_p(p_outer))
+            st.metric("Statistically Significant", significance_label(p_outer))
+            st.metric("Effect Strength", interpret_strength(r_outer_val))
+            st.metric("Effect Direction", interpret_direction(r_outer_val))
 
-    # Inner London
-    with col2:
-        st.markdown("### Inner London")
-        st.metric("Correlation (r)", f"{r_inner_val:.2f}")
-        st.metric("R²", f"{r_inner_val**2:.2f}")
-        st.metric("p-value", format_p(p_inner))
-        st.metric("Statistically Significant", significance_label(p_inner))
-        st.metric("Effect Strength", interpret_strength(r_inner_val))
-        st.metric("Effect Direction", interpret_direction(r_inner_val))
+    else:
+        col1, col2 = st.columns(2)
 
+        with col1:
+            st.markdown(f"### {active_label}")
+            st.metric("Correlation (r)", f"{active_r:.2f}")
+            st.metric("R²", f"{active_r2:.2f}")
+            st.metric("p-value", format_p(active_p))
 
-    # Outer London
-    with col3:
-        st.markdown("### Outer London")
-        st.metric("Correlation (r)", f"{r_outer_val:.2f}")
-        st.metric("R²", f"{r_outer_val**2:.2f}")
-        st.metric("p-value", format_p(p_outer))
-        st.metric("Statistically Significant", significance_label(p_outer))
-        st.metric("Effect Strength", interpret_strength(r_outer_val))
-        st.metric("Effect Direction", interpret_direction(r_outer_val))
+        with col2:
+            st.markdown("###")
+            st.metric("Statistically Significant", significance_label(active_p))
+            st.metric("Effect Strength", interpret_strength(active_r))
+            st.metric("Effect Direction", interpret_direction(active_r))
 
-# ---------------------------------------------------------------------
-# Dynamic Markdown
+# ----------------------------------------------------------
+# Dynamic Key Insights — dynamic based on area_view
 
-significance_text = (
-    "statistically significant"
-    if p < 0.05
-    else "not statistically significant"
-)
+significance_text  = "statistically significant" if p       < 0.05 else "not statistically significant"
+significance_inner = "statistically significant" if p_inner < 0.05 else "not statistically significant"
+significance_outer = "statistically significant" if p_outer < 0.05 else "not statistically significant"
 
-significance_inner = (
-    "statistically significant"
-    if p_inner < 0.05
-    else "not statistically significant"
-)
-
-significance_outer = (
-    "statistically significant"
-    if p_outer < 0.05
-    else "not statistically significant"
-)
-
-
-st.markdown(f"""
-**Key Insights**
-
-- Borough size is {interpret_strength(r).lower()} and {interpret_direction(r).lower()} with median response time 
+if area_view == "All (Inner + Outer)":
+    st.markdown(f"""
+- Borough size is **{interpret_strength(r).lower()}** and **{interpret_direction(r).lower()}** correlated with median response time 
   **(r = {r:.2f}, R² = {r_squared:.2f})**, explaining approximately 
   **{r_squared_percent:.0f}%** of the observed variation 
   **(p {format_p(p)}; {significance_text})**.
-- The positive relationship remains observable within both groups,
+- The positive relationship remains observable within both groups:
   Inner London **(r = {r_inner_val:.2f}; {significance_inner})** and 
   Outer London **(r = {r_outer_val:.2f}; {significance_outer})**.
 - This suggests that borough size contributes to response performance 
   regardless of structural classification.
 """)
 
+elif area_view == "Inner London only":
+    st.markdown(f"""
+- Within Inner London, borough size shows a **{interpret_strength(r_inner_val).lower()} {interpret_direction(r_inner_val).lower()}** 
+  relationship with median response time **(r = {r_inner_val:.2f}, R² = {r_inner_val**2:.2f})**.
+- This explains approximately **{r_inner_val**2*100:.0f}%** of response time variation 
+  within Inner London **(p {format_p(p_inner)}; {significance_inner})**.
+- For context, the overall r across all boroughs is **{r:.2f}**. 
+  Inner London {'shows a weaker' if abs(r_inner_val) < abs(r) else 'shows a comparable'} effect.
+""")
+
+else:
+    st.markdown(f"""
+- Within Outer London, borough size shows a **{interpret_strength(r_outer_val).lower()} {interpret_direction(r_outer_val).lower()}** 
+  relationship with median response time **(r = {r_outer_val:.2f}, R² = {r_outer_val**2:.2f})**.
+- This explains approximately **{r_outer_val**2*100:.0f}%** of response time variation 
+  within Outer London **(p {format_p(p_outer)}; {significance_outer})**.
+- For context, the overall r across all boroughs is **{r:.2f}**. 
+  Outer London {'shows a stronger' if abs(r_outer_val) > abs(r) else 'shows a comparable'} effect.
+""")
+
+
 # ---------------------------------------------------------------------
 st.markdown("---")
 # ---------------------------------------------------------------------
 st.subheader("3.2 Borough Size vs. Response within 6 Minute (%)")
+
+st.markdown(
+    f"<div style='margin-top:-10px; margin-bottom:8px; color:#6b7280; font-size:0.85rem;'>"
+    f"Data shown: {period_label}, {incident_label}"
+    f"</div>",
+    unsafe_allow_html=True
+    )   
 
 df_comp = borough_df
 
@@ -1339,9 +1400,6 @@ significance_c = (
 )
 
 st.markdown(f"""
-
-**Key Insights**
-
 - The relationship between borough size and 6 minute compliance is **{strength_c} and {direction_c}**
 (r = {r_c:.2f}, R² = {r2_c:.2f}).
 - This indicates that the impact of borough size is not limited to response time but is also associated with lower target compliance.
@@ -1352,16 +1410,18 @@ st.markdown(f"""
 st.markdown("---")
 # ---------------------------------------------------------------------
 
-st.markdown(f"""
-### Key Takeaway
-
-- Borough size is the primary driver of geographic variation in response performance,
-  strongly associated with both longer response times (r = {r:.2f}) 
-  and lower 6-minute compliance (r = {r_c:.2f}).
-""")
+st.markdown(
+  "<div style='margin-top:12px; padding-left:12px; border-left:3px solid #e5e7eb; "
+  "color:#4b5563; font-size:0.95rem;'>"
+  "<strong>In summary:</strong> Borough size is strongly associated with slower median response times "
+  "and lower 6-minute compliance, highlighting geography as a key source of performance variation."
+  "</div>",
+  unsafe_allow_html=True
+)
 
 
 st.markdown("---")
 st.caption(
-    "London Fire Brigade Response Time & Operational Performance Analysis (2021-2025) · Andrés Lill · February 2026"
+    "London Fire Brigade Response Time Analysis (2021–2025) · Andrés Lill · February 2026"
 )
+

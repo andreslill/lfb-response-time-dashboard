@@ -10,7 +10,7 @@ st.set_page_config(layout="wide")
 # ---------------------------------------------------------------------
 #Title + Intro
 
-st.title("🔍 Key Findings & Implications")
+st.title("Key Findings & Implications")
 st.markdown(
     "This page summarises the main findings from the London Fire Brigade "
     "Incident & Response Time Analysis. All metrics update dynamically based on the selected filters."
@@ -63,8 +63,10 @@ max_year = df["Year"].max()
 
 if selected_year == "All" and selected_month == "All":
     period_label = f"{min_year}–{max_year}"
+    
 elif selected_year != "All" and selected_month == "All":
     period_label = str(selected_year)
+    
 elif selected_year == "All" and selected_month != "All":
     period_label = f"{selected_month} ({min_year}–{max_year})"
 else:
@@ -315,7 +317,9 @@ travel fluctuates with traffic and distance.
 
 **Implication:** Station mobilisation is efficient and uniform: it is not the bottleneck.
 Improving response performance requires addressing **travel distance and geographic coverage**,
-not operational station processes.
+not operational station processes. The station coverage map (Section 2 of the Drivers page)
+confirms this directly: cross-borough deployments show consistently longer median travel times
+than home deployments.
 """)
     st.markdown("---")
 
@@ -343,7 +347,8 @@ else:
 st.markdown("""
 **Implication:** Most exceedances are driven by **everyday structural and spatial constraints**,
 principally travel distance in larger boroughs, rather than identifiable operational failures.
-This reinforces the case for geographic solutions over operational ones.
+This reinforces the case for geographic solutions over operational ones — consistent with
+the cross-borough deployment patterns visible in the station coverage map.
 """)
 
 st.markdown("---")
@@ -358,9 +363,10 @@ Taken together, the findings point to a consistent picture for **{period_label},
 
 **Geographic coverage is the most impactful factor.**
 Travel time explains ~{travel_share_str} of response time and borough size strongly predicts
-compliance. Optimising the **geographic placement of fire stations and coverage areas**
-is more likely to improve performance than further refinements to already efficient
-mobilisation processes.
+compliance. The station coverage analysis shows that cross-borough deployments incur measurably
+longer travel times than home deployments, reinforcing that optimising the **geographic placement
+of fire stations and coverage areas** is more likely to improve performance than further
+refinements to already efficient mobilisation processes.
 
 **Overall performance metrics are misleading without borough context.**
 A city-wide median of {median_response:.2f} minutes can obscure the fact
@@ -392,18 +398,18 @@ with st.expander("Study Limitations"):
     st.markdown("""
     All relationships reported are **correlational, not causal**. While the association between
     borough size and compliance (r = −0.79) is strong, the analysis does not isolate the individual
-    effects of traffic density, road network structure, crew availability, or station placement.
+    effects of traffic density, road network structure, crew availability.
     Borough size may partly act as a **proxy for these unmeasured variables**, and results should
     be interpreted accordingly.
     """)
 
     st.subheader("2. Geographic Granularity")
     st.markdown("""
-    All spatial analysis is conducted at the **borough level** (32 London boroughs + City of London).
-    While sufficient to identify structural gaps between Inner and Outer London, this granularity
-    **conceals variation within boroughs**. Station-level or postcode-level analysis would provide
-    a more precise picture of localised response constraints, but was excluded to ensure consistency
-    with the GIS boundary dataset used for choropleth mapping.
+    Most spatial analysis is conducted at the **borough level**, supplemented by a station-level
+    coverage map. While the station map identifies cross-borough deployment patterns and
+    individual station performance, it does not capture **within-borough variation at postcode
+    or street level**. A more granular spatial analysis could pinpoint exact coverage gaps and
+    identify where additional resources would have the greatest impact.
     """)
 
     st.subheader("3. Static Borough Classifications")
@@ -459,15 +465,10 @@ with st.expander("Study Limitations"):
 with st.expander("Further Outlook"):
     st.markdown("""
 
-    **Station-Level Geographic Analysis**
-    The current analysis aggregates performance at the borough level, which conceals variation
-    within boroughs. A station-level breakdown would allow for the identification of specific
-    coverage gaps and pinpoint exactly where additional resources would have the greatest impact.
-
     **Multivariate Regression**
-    The individual contributions of traffic density, road network structure, and station placement
-    could not be isolated in the current analysis. A multivariate model would allow us to test for
-    the relative importance of each factor.
+    The individual contributions of traffic density, road network structure
+    could not be isolated in the current analysis. While station-level coverage patterns have been
+    explored, a multivariate model would allow us to test for the relative importance of each factor.
 
     **Traffic Data Integration**
     Merging traffic data against response time records would allow for a direct measurement
@@ -487,5 +488,6 @@ with st.expander("Further Outlook"):
     
 st.markdown("---")
 st.caption(
-    "London Fire Brigade Response Time & Operational Performance Analysis (2021-2025) · Andrés Lill · February 2026"
+    "London Fire Brigade Response Time Analysis (2021–2025) · Andrés Lill · February 2026"
 )
+

@@ -4,14 +4,33 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="London Fire Brigade – Operational Performance", layout="wide")
+    page_title="London Fire Brigade Response Time Analysis (2021–2025)", layout="wide")
 
 # ---------------------------------------------------------------------
 # Title
 
-st.title("London Fire Brigade Response Time & Operational Performance Analysis (2021-2025)")
+st.title("London Fire Brigade Response Time Analysis (2021–2025)")
 
-st.markdown("---")
+# ---------------------------------------------------------------------
+# Research question
+
+st.markdown("""
+This dashboard analyses operational response performance of the **London Fire Brigade (LFB)** 
+using incident and mobilisation records between **2021 and 2025**.
+
+The analysis investigates how response times vary across geography, incident type, and time of day,
+and identifies the structural factors that drive performance differences across London.
+""")
+
+st.markdown("### Key Analytical Questions")
+
+st.markdown("""
+- What proportion of incidents meet the **6-minute response target**?
+- How does response performance vary **across boroughs and incident types**?
+- Is response time variation driven primarily by **turnout processes or travel time**?
+- Do **geographic coverage and cross-borough deployments** explain slower response times?
+""")
+
 
 # ---------------------------------------------------------------------
 # Context
@@ -33,7 +52,7 @@ st.markdown("---")
 # ---------------------------------------------------------------------
 # What this dashboard examines
 
-st.subheader("What This Dashboard Examines")
+st.subheader("Analytical Framework")
 
 col1, col2 = st.columns(2)
 
@@ -144,9 +163,6 @@ their operational implications.
 """)
 
 st.markdown("---")
-
-
-st.markdown("---")
 st.caption(
-    "London Fire Brigade Response Time & Operational Performance Analysis (2021-2025) · Andrés Lill · February 2026"
+    "London Fire Brigade Response Time Analysis (2021–2025) · Andrés Lill · February 2026"
 )
