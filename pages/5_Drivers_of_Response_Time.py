@@ -381,8 +381,7 @@ st.markdown("---")
 # ------------------------------------------------------------
 # Station Coverage and Cross-Borough Deployment
 
-
-STATIONS_PARQUET = "Data/processed/stations_london_cov.parquet"
+STATIONS_PARQUET = "Data/stations_london_cov.parquet"
 
 @st.cache_data
 def load_station_coords(path: str) -> pd.DataFrame:
