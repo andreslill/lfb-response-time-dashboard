@@ -58,7 +58,11 @@ mobilisation processes or travel constraints.
 df = load_data()
 
 # Load London borough shapefile
-boroughs = gpd.read_file("Data/london_boroughs/London_Borough_Excluding_MHW.shp")
+@st.cache_data(show_spinner=False)
+def load_boroughs():
+    return gpd.read_file("Data/london_boroughs/London_Borough_Excluding_MHW.shp")
+
+boroughs = load_boroughs()
 
 # ---------------------------------------------------------------------
 # Year and Month Filters
