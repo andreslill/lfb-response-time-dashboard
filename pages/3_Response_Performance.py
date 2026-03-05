@@ -129,10 +129,10 @@ col1, col2, col3, col4 = st.columns(4)
 
 st.markdown("---")
 
-col1.metric("Median Response Time (min)", f"{median_response:.2f} min")
-col2.metric("Response within 6 min (%)", f"{response_within_6min:.1f}%")
-col3.metric("90th Percentile Response Time (min)", f"{p90_response:.2f} min")
-col4.metric(">10 min Delays (%)", f"{extreme_delay_rate:.1f}%")
+col1.metric("Median Response Time", f"{median_response:.2f} min")
+col2.metric("Response within 6 min", f"{response_within_6min:.1f}%")
+col3.metric("90th Percentile Response Time", f"{p90_response:.2f} min")
+col4.metric(">10 min Delays", f"{extreme_delay_rate:.1f}%")
 
 
 # ---------------------------------------------------------------------
