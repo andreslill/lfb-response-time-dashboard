@@ -116,16 +116,21 @@ with nav3:
     st.markdown(
         """
         <div style="border:1px solid #e5e7eb; border-radius:8px; padding:16px; margin-bottom:12px;">
-        <strong>Drivers of Response Time</strong><br>
-        <span style="color:#6b7280; font-size:0.9rem;">Turnout vs. travel time decomposition, hourly variation, delay code analysis.</span>
+            <strong>Drivers of Response Time</strong><br>
+            <span style="color:#6b7280; font-size:0.9rem;">Turnout vs. travel time decomposition, hourly variation, delay code analysis.</span>
+        </div>
+        <div style="border:1px solid #e5e7eb; border-radius:8px; padding:16px; margin-bottom:12px;">
+            <strong>Key Findings & Implications</strong><br>
+            <span style="color:#6b7280; font-size:0.9rem;">Summary of findings, operational implications, and study limitations.</span>
         </div>
         <div style="border:1px solid #e5e7eb; border-radius:8px; padding:16px;">
-        <strong>Key Findings & Implications</strong><br>
-        <span style="color:#6b7280; font-size:0.9rem;">Summary of findings, operational implications, and study limitations.</span>
+            <strong>Scenario Explorer</strong><br>
+            <span style="color:#6b7280; font-size:0.9rem;">Simulate travel time reductions per borough and recalculate 6-minute compliance from incident-level data.</span>
         </div>
         """,
         unsafe_allow_html=True,
     )
+
 
 st.markdown("---")
 
