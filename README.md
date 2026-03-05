@@ -50,6 +50,7 @@ Adherence to first appliance targets is examined across time periods, incident t
 | **Geographic Performance** | Borough-level choropleth maps for response time, compliance, and incident volume |
 | **Drivers of Response Time** | Turnout vs. travel time decomposition, hourly variation, and delay code analysis |
 | **Key Findings & Implications** | Summary of findings, operational implications, study limitations, and further outlook |
+| **Scenario Explorer** | Interactive what-if tool: simulate uniform travel time reductions per borough and recalculate 6-minute compliance directly from incident-level data |
 
 All pages update dynamically based on sidebar filters (Year, Month, Incident Type).
 
@@ -63,6 +64,14 @@ All pages update dynamically based on sidebar filters (Year, Month, Incident Typ
 - **Travel time** accounts for ~77% of total response time; turnout time is highly consistent (IQR: 4 s)
 - **Borough area** explains 59% of response time variation and 62% of compliance variation (r = −0.79)
 - **61.6% of all target exceedances** are recorded as "Not held up" — no specific operational cause
+
+---
+
+## Interactive Scenario Analysis
+
+The **Scenario Explorer** page goes beyond descriptive analysis. It allows users to simulate what would happen to 6-minute compliance if travel times were uniformly reduced by a given number of seconds — recalculated directly from the underlying incident-level data rather than estimated from aggregates.
+
+This makes it possible to quantify, for any given borough, how much operational improvement (e.g. from a new station or route optimisation) would be needed to meaningfully shift compliance rates.
 
 ---
 
