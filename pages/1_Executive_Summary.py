@@ -358,7 +358,8 @@ st.pyplot(fig)
 compliance_gap = top5.iloc[0]["ComplianceRate"] - bottom5.iloc[0]["ComplianceRate"]
 st.markdown(f"""
 - The best-performing borough (**{top5.iloc[0]['IncGeo_BoroughName'].title()}**, {top5.iloc[0]['ComplianceRate']:.1f}%) outperforms the worst (**{bottom5.iloc[0]['IncGeo_BoroughName'].title()}**, {bottom5.iloc[0]['ComplianceRate']:.1f}%) by **{compliance_gap:.1f} percentage points**.
-- Geography explains most response time variation, because travel distances are longer in larger outer boroughs than differences in operations.
+- Geographic variation, not operational differences, is the primary driver — larger outer boroughs face longer travel distances.
+""")
 
 st.markdown("---")
 
