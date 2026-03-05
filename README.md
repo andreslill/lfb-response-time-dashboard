@@ -31,13 +31,13 @@ Adherence to first appliance targets is examined across time periods, incident t
 
 ![Station Coverage Map](docs/station_coverage_map.png)
 
-*Fire station coverage across London. *Fire station coverage across London. Circle size represents the number of incidents attended by each station and colour indicates median travel time. Tooltip shows station-level deployment metrics.*
+**Fig. 1.** *Fire station coverage across London. Circle size represents the number of incidents attended by each station and colour indicates median travel time. Tooltip shows station-level deployment metrics.*
 
 ### Response Time Distribution
 
 ![Response Time Distribution](docs/response_time_distribution.png)
 
-*Distribution of first-pump response times across incidents. Vertical lines indicate the median, mean, 90th percentile, and the official 6-minute response target.*
+**Fig. 2.**  *Distribution of first-pump response times across incidents. Vertical lines indicate the median, mean, 90th percentile, and the official 6-minute response target.*
 ---
 
 ## Dashboard Pages
