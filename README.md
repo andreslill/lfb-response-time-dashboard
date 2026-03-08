@@ -59,11 +59,11 @@ All descriptive pages update dynamically based on sidebar filters (Year, Month, 
 ## Key Findings
 
 - **Median response time: 5.02 min**, below the 6-minute target at the aggregate level
-- **6-minute compliance: 69.5%**, roughly 1 in 3 incidents exceeds the primary target
+- **6-minute compliance: 69.5%**, meaning roughly 1 in 3 incidents exceeds the primary target
 - **Borough range:** 4.22 min (Kensington & Chelsea) to 6.02 min (Hillingdon), a gap of 1.80 minutes
-- **Travel time** accounts for ~77% of total response time. Turnout time is highly consistent (IQR: 4 s)
+- **Travel time** accounts for ~77% of total response time, while turnout time is highly consistent (IQR: 4 s)
 - **Borough area** explains 59% of response time variation and 62% of compliance variation (r = −0.79)
-- **61.6% of all target exceedances** are recorded as "Not held up", no specific operational cause
+- **61.6% of all target exceedances** are recorded as "Not held up", meaning no specific operational cause
 
 ---
 
