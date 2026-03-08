@@ -169,16 +169,16 @@ contains the full analytical pipeline and is the methodological foundation for a
 dashboard findings.
 
 **Structure:**
-- **Step 1 – Data Exploration:** Separate inspection of both raw datasets (Incidents and
+- **Step 1: Data Exploration:** Separate inspection of both raw datasets (Incidents and
   Mobilisation), including distribution analysis, variable classification, and metadata review.
-- **Step 2 – Cleaning & Preprocessing:** Documented missing value strategy per column,
+- **Step 2: Cleaning & Preprocessing:** Documented missing value strategy per column,
   datetime feature engineering (hour, weekday, month, year), and dataset merge.
-- **Step 3 – Exploratory Data Analysis:** 10 analytical sections covering incident trends,
+- **Step 3: Exploratory Data Analysis:** 10 analytical sections covering incident trends,
   temporal demand patterns, response time distributions, borough-level performance, and
   delay code analysis. Includes a one-way ANOVA (attendance time ~ hour of call) with
   Eta² effect size to quantify time-of-day impact, and OLS regression to identify
   structural drivers of borough-level response time variation.
-- **Step 4 – Export:** Processed dataset exported to compressed Parquet for the Streamlit
+- **Step 4: Export:** Processed dataset exported to compressed Parquet for the Streamlit
   dashboard.
 
 The notebook documents not just *what* was found, but *why* specific analytical choices
