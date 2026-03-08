@@ -69,7 +69,7 @@ All descriptive pages update dynamically based on sidebar filters (Year, Month, 
 
 ## Interactive Scenario Analysis
 
-The Scenario Explorer page goes beyond descriptive analysis. It simulates how 6 minute compliance would change if travel times were uniformly reduced by a given number of seconds. It uses direct recalculations from the underlying incident level data rather than estimates based on aggregates.
+The Scenario Explorer page goes beyond descriptive analysis. It simulates how 6-minute compliance would change if travel times were uniformly reduced by a given number of seconds. It uses direct recalculations from the underlying incident level data rather than estimates based on aggregates.
 
 This makes it possible to quantify, for any given borough, how much operational improvement (e.g. from a new station or route optimisation) would be needed to meaningfully shift compliance rates.
 
