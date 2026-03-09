@@ -77,14 +77,14 @@ This makes it possible to quantify, for any given borough, how much operational 
 
 ## Tech Stack
 
-- **Python** — data processing and analysis
-- **Pandas / NumPy** — data manipulation and statistical calculations
-- **Streamlit** — multi-page interactive dashboard
-- **Matplotlib / Seaborn** — static visualisations
-- **Plotly** — interactive choropleth maps
-- **GeoPandas / Folium** — geographic boundary data and mapping
-- **SciPy** — statistical testing (correlation analysis)
-- **statsmodels** — OLS regression and statistical modelling
+- **Python**: data processing and analysis
+- **Pandas / NumPy**: data manipulation and statistical calculations
+- **Streamlit**: multi-page interactive dashboard
+- **Matplotlib / Seaborn**: static visualisations
+- **Plotly**: interactive choropleth maps
+- **GeoPandas / Folium**: geographic boundary data and mapping
+- **SciPy**: statistical testing (correlation analysis)
+- **statsmodels**: OLS regression and statistical modelling
 
 ## Data Pipeline
 
