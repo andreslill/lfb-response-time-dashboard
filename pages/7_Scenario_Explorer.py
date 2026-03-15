@@ -183,7 +183,7 @@ if time_reduction_sec > 0:
             <strong>Impact:</strong>
             A uniform <strong>{time_reduction_sec}s</strong> reduction would bring an additional
             <strong>~{additional_within_per_year:,} incidents</strong> within the 6-minute target
-            <strong>per year</strong> in <strong>{selected_borough.title()}</strong> —
+            <strong>per year</strong> in <strong>{selected_borough.title()}</strong>,
             increasing <strong>% within 6 minutes</strong> from <strong>{current_within_6:.1f}%</strong>
             to <strong>{new_within_6:.1f}%</strong>
             ({within_gain_pp:+.1f} percentage points).
