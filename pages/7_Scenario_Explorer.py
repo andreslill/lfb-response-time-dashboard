@@ -17,7 +17,7 @@ FIG_WIDTH = 10
 st.title("Scenario Explorer")
 st.markdown(
     "**How much would 6-min Compliance Rate improve under uniform time reductions?**  \n"
-    "Select a borough and apply a uniform reduction (seconds) to incident response times — "
+    "Select a borough and apply a uniform reduction (seconds) to incident response times, "
     "recalculated from the actual incident-level data (2021–2025)."
 )
 st.markdown("---")
