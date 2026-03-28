@@ -184,3 +184,9 @@ dashboard findings.
 The notebook documents not just *what* was found, but *why* specific analytical choices
 were made — including the exclusion of second pump data (64% missing rate) and the
 rationale for using median over mean for response time comparisons.
+
+---
+
+## Author
+
+Andrés Lill · 2026  
