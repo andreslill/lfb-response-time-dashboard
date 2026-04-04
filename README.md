@@ -8,7 +8,7 @@ An interactive dashboard analysing operational response performance across Londo
 
 **Key insight:** Borough area drives most variation in response performance through travel time. Turnout time remains nearly constant across all stations.
 
-**[Streamlit Dashboard](https://lfb-response-time-dashboard-cqk7jfyroyw9dfkfbcj9w5.streamlit.app/)**
+**[Open Streamlit Dashboard](https://lfb-response-time-dashboard-cqk7jfyroyw9dfkfbcj9w5.streamlit.app/)**
 
 ---
 
