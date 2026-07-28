@@ -63,8 +63,8 @@ n_over_target = (borough_df["FirstPumpArriving_AttendanceTime"] > 360).sum()
 attendance_median_sec = float(borough_df["FirstPumpArriving_AttendanceTime"].median())
 
 if has_travel:
-    median_travel_sec = float(borough_df["TravelTimeSeconds"].median())
-    median_turnout_sec = float(borough_df["TurnoutTimeSeconds"].median()) if has_turnout else None
+    median_travel_sec = float(borough_df["TravelTimeSeconds"].astype("float64").median())
+    median_turnout_sec = float(borough_df["TurnoutTimeSeconds"].astype("float64").median()) if has_turnout else None
     travel_share = (median_travel_sec / attendance_median_sec * 100) if attendance_median_sec > 0 else np.nan
 else:
     # Fallback: 77% travel / 23% turnout heuristic (only used if travel isn't present)
