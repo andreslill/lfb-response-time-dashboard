@@ -121,8 +121,8 @@ comp_ss = compliance_by_type.get("Special Service", float("nan"))
 comp_fi = compliance_by_type.get("Fire", float("nan"))
 
 # Travel / Turnout decomposition (filtered) 
-median_turnout  = filtered_incidents["TurnoutTimeSeconds"].median() / 60
-median_travel   = filtered_incidents["TravelTimeSeconds"].median() / 60
+median_turnout  = filtered_incidents["TurnoutTimeSeconds"].astype("float64").median() / 60
+median_travel   = filtered_incidents["TravelTimeSeconds"].astype("float64").median() / 60
 total_component = median_turnout + median_travel
 travel_share    = (median_travel / total_component * 100) if total_component > 0 else float("nan")
 
